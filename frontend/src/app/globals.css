@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f9fafb;
+  --surface: #ffffff;
+  --surface-elevated: #f3f4f6;
+  --border: #e5e7eb;
+  --text-primary: #111827;
+  --text-muted: #6b7280;
+  --accent: #059669;
+  --accent-hover: #047857;
+  --accent-muted: #d1fae5;
+}
+
+.dark {
+  --background: #0d0d0d;
+  --surface: #141414;
+  --surface-elevated: #1a1a1a;
+  --border: #2a2a2a;
+  --text-primary: #ffffff;
+  --text-muted: #9ca3af;
+  --accent: #059669;
+  --accent-hover: #047857;
+  --accent-muted: #064e3b;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-border: var(--border);
+  --color-text-primary: var(--text-primary);
+  --color-text-muted: var(--text-muted);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-muted: var(--accent-muted);
+  --font-sans: var(--font-inter);
+}
+
+body {
+  background: var(--background);
+  color: var(--text-primary);
+  font-family: var(--font-inter), system-ui, sans-serif;
+}
+
+.hero-gradient {
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(167, 139, 250, 0.35), transparent 55%),
+    radial-gradient(ellipse at 70% 80%, rgba(236, 72, 153, 0.2), transparent 50%),
+    linear-gradient(180deg, var(--surface-elevated), var(--surface));
+}
+
+.dark .hero-gradient {
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(167, 139, 250, 0.25), transparent 55%),
+    radial-gradient(ellipse at 70% 80%, rgba(236, 72, 153, 0.15), transparent 50%),
+    linear-gradient(180deg, #1a1a1a, #141414);
+}
+
+.hero-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.dark .hero-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+}
