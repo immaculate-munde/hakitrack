@@ -25,7 +25,19 @@ const supabase = createClient(url, key, {
   auth: { persistSession: false, autoRefreshToken: false },
 });
 
-const demoCases = [
+type SeedCase = {
+  case_number: string;
+  defendant_name: string;
+  court_station: string;
+  current_status: string;
+  bail_amount: number | null;
+  next_hearing_date: string | null;
+  holding_location: string | null;
+  judge_name: string | null;
+  notes: string;
+};
+
+const demoCases: SeedCase[] = [
   {
     case_number: "CR-2026-089",
     defendant_name: "John Kamau",
