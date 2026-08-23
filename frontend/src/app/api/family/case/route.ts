@@ -13,7 +13,13 @@ export async function GET(request: NextRequest) {
     return unauthorizedResponse();
   }
 
-  const allowed = await verifyFamilyCaseAccess(session.caseId, session.phone);
+  const caseId = request.nextUrl.searchParams.get("caseId");
+
+  if (!caseId) {
+    return NextResponse.json({ error: "Case ID is required." }, { status: 400 });
+  }
+
+  const allowed = await verifyFamilyCaseAccess(caseId, session.phone);
   if (!allowed) {
     return unauthorizedResponse();
   }
@@ -25,7 +31,7 @@ export async function GET(request: NextRequest) {
     .select(
       "id, case_number, defendant_name, court_station, current_status, bail_amount, next_hearing_date, holding_location, judge_name, last_updated",
     )
-    .eq("id", session.caseId)
+    .eq("id", caseId)
     .maybeSingle();
 
   if (error || !caseRecord) {
@@ -35,7 +41,7 @@ export async function GET(request: NextRequest) {
   const { data: auditLogs } = await supabase
     .from("case_audit_log")
     .select("id, old_status, new_status, changed_at")
-    .eq("case_id", session.caseId)
+    .eq("case_id", caseId)
     .order("changed_at", { ascending: false })
     .limit(10);
 

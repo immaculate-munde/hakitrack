@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isAuthenticatedRequest, unauthorizedResponse } from "@/lib/auth";
-import { CASE_STATUSES, normalizePhoneForDb } from "@/lib/case-status";
+import {
+  CASE_STATUSES,
+  STATUS_LABELS,
+  type CaseStatus,
+  normalizePhoneForDb,
+} from "@/lib/case-status";
+import { sendSMS } from "@/lib/sms";
 import { createServiceClient } from "@/lib/supabase/server";
 
 type RouteContext = {
@@ -130,6 +136,30 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
         new_status: updates.current_status,
         note: body.note ?? "Status updated via clerk dashboard",
       });
+
+      const statusLabel =
+        STATUS_LABELS[updates.current_status as CaseStatus] ??
+        String(updates.current_status);
+      const message = `HakiTrack: Case ${existing.case_number} status updated to ${statusLabel}.`;
+
+      const { data: subscribers } = await supabase
+        .from("case_subscribers")
+        .select("phone_number")
+        .eq("case_id", id);
+
+      const notified = new Set<string>();
+
+      for (const subscriber of subscribers ?? []) {
+        notified.add(subscriber.phone_number);
+        await sendSMS(subscriber.phone_number, message);
+      }
+
+      if (
+        existing.family_contact_phone &&
+        !notified.has(existing.family_contact_phone)
+      ) {
+        await sendSMS(existing.family_contact_phone, message);
+      }
     }
 
     return NextResponse.json({ case: data });
