@@ -40,7 +40,7 @@ async function getClerkToken(): Promise<string> {
 
 export async function parseFamilyToken(
   token: string | undefined,
-): Promise<{ caseId: string; phone: string } | null> {
+): Promise<{ memberId: string; phone: string } | null> {
   if (!token) return null;
 
   try {
@@ -53,12 +53,12 @@ export async function parseFamilyToken(
     const payloadColon = payload.indexOf(":");
     if (payloadColon === -1) return null;
 
-    const caseId = payload.slice(0, payloadColon);
+    const memberId = payload.slice(0, payloadColon);
     const phone = payload.slice(payloadColon + 1);
     const expected = await hmacSha256Hex(`family:${payload}`);
 
     if (signature !== expected) return null;
-    return { caseId, phone };
+    return { memberId, phone };
   } catch {
     return null;
   }
