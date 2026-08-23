@@ -2,9 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ThemeToggle } from "@/components/layout/ThemeToggle";
-import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
+import { SiteShell } from "@/components/layout/SiteShell";
 import { Input } from "@/components/ui/Input";
 
 export default function AdminLoginPage() {
@@ -39,39 +37,44 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="absolute right-4 top-4">
-        <ThemeToggle />
-      </div>
-
-      <Card className="w-full max-w-md p-8">
-        <div className="space-y-1 text-center">
-          <h1 className="text-2xl font-bold text-text-primary">Clerk Access</h1>
-          <p className="text-sm text-text-muted">
+    <SiteShell darkMain>
+      <div className="flex min-h-[70vh] items-center justify-center px-4 py-16">
+        <div className="site-panel w-full max-w-md px-8 py-10 backdrop-blur-sm">
+          <p className="site-mono-label text-sm">[ Clerk Registry Access ]</p>
+          <h1 className="mt-6 text-3xl font-light text-site-on-dark">Clerk Access</h1>
+          <p className="mt-2 text-sm text-site-on-dark-muted">
             Enter PIN to manage case records
           </p>
+
+          <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+            <div className="space-y-2">
+              <label htmlFor="clerk-pin" className="text-sm text-site-on-dark-muted">
+                Clerk PIN
+              </label>
+              <input
+                id="clerk-pin"
+                type="password"
+                inputMode="numeric"
+                value={pin}
+                onChange={(event) => setPin(event.target.value)}
+                placeholder="Enter PIN"
+                required
+                className="w-full border-b border-site-border bg-transparent py-2 text-site-on-dark outline-none focus:border-site-mono"
+              />
+            </div>
+
+            {error ? <p className="text-sm text-red-400">{error}</p> : null}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="site-ghost-btn site-ghost-btn-light mt-4 w-full py-3 text-xs tracking-[0.14em] uppercase disabled:opacity-50"
+            >
+              {loading ? "Signing in..." : "Sign In"}
+            </button>
+          </form>
         </div>
-
-        <form onSubmit={handleSubmit} className="mt-8 space-y-4">
-          <Input
-            label="Clerk PIN"
-            type="password"
-            inputMode="numeric"
-            value={pin}
-            onChange={(event) => setPin(event.target.value)}
-            placeholder="Enter PIN"
-            required
-          />
-
-          {error ? (
-            <p className="text-sm text-red-400">{error}</p>
-          ) : null}
-
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Signing in..." : "Sign In"}
-          </Button>
-        </form>
-      </Card>
-    </div>
+      </div>
+    </SiteShell>
   );
 }
