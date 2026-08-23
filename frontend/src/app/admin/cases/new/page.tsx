@@ -65,7 +65,7 @@ export default function NewCasePage() {
         backLabel="Back to Registry"
       />
 
-      <Card className="max-w-2xl p-6">
+      <Card className="site-panel max-w-2xl p-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
             label="Case Number"
