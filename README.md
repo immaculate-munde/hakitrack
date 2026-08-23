@@ -17,7 +17,7 @@ USSD case and bail status tracker for Kenya. Families dial in to check court dat
 - SMS reminder opt-in from USSD (day before hearing)
 - SMS fallback for legal aid directory (other counties)
 - PIN-protected clerk dashboard
-- Family web dashboard (case number + registered phone)
+- Family web dashboard (name, email, phone login + case lookup)
 - Accessibility statement and privacy policy pages
 - Dark + light mode UI
 - Mock CTS database for hackathon demos
@@ -40,6 +40,7 @@ hakitrack/
    - `supabase/migrations/001_cases_schema.sql`
    - `supabase/migrations/002_legal_aid_schema.sql`
    - `supabase/migrations/003_family_access.sql`
+   - `supabase/migrations/004_family_members.sql`
 3. Copy project URL and keys
 
 ### 2. Environment
@@ -144,11 +145,11 @@ curl -X POST http://localhost:3000/api/cron/reminders \
 | Role | Login | Dashboard | Access |
 |------|-------|-----------|--------|
 | **Clerk** | `/admin/login` (PIN) | `/admin` | Create and update cases, set family contact phone |
-| **Family** | `/family/login` (case # + phone) | `/family` | Read-only case status, USSD tracking instructions |
+| **Family** | `/family/login` (name, email, phone) | `/family` | Look up case by number, read-only view, SMS alerts |
 
-Family login accepts the phone registered on the case (`family_contact_phone`) or a number subscribed via USSD (option 1).
+Family login registers name, email, and phone for SMS. On the dashboard, enter a case number — your phone must match the clerk's `family_contact_phone` or a USSD subscription.
 
-**Demo family login:** case `CR-2026-089`, phone `254711111111` (after seed + migration 003).
+**Demo:** sign in with phone `254711111111`, then look up case `CR-2026-089` (after migrations 003–004 and seed).
 
 ## Demo script
 
