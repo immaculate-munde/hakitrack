@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isAuthenticatedRequest, unauthorizedResponse } from "@/lib/auth";
-import { CASE_STATUSES } from "@/lib/case-status";
+import { CASE_STATUSES, normalizePhoneForDb } from "@/lib/case-status";
 import { createServiceClient } from "@/lib/supabase/server";
 
 type RouteContext = {
@@ -102,6 +102,11 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     }
     if (body.court_station !== undefined) {
       updates.court_station = body.court_station;
+    }
+    if (body.family_contact_phone !== undefined) {
+      updates.family_contact_phone = body.family_contact_phone
+        ? normalizePhoneForDb(String(body.family_contact_phone))
+        : null;
     }
 
     const { data, error } = await supabase
