@@ -1,7 +1,9 @@
+import { SiteShell } from "@/components/layout/SiteShell";
+
 export function AdminShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-7xl px-4 py-8 md:px-8">{children}</div>
-    </div>
+    <SiteShell darkMain>
+      <div className="mx-auto max-w-7xl px-4 py-10 md:px-8">{children}</div>
+    </SiteShell>
   );
 }
