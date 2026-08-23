@@ -6,11 +6,11 @@ export function StatCell({
   value: string | number;
 }) {
   return (
-    <div className="flex flex-col gap-1 px-4 py-4 md:border-r md:border-border md:last:border-r-0">
-      <span className="text-xs uppercase tracking-wider text-text-muted">
+    <div className="flex flex-col gap-1 border-site-border px-4 py-4 md:border-r md:last:border-r-0">
+      <span className="text-xs uppercase tracking-wider text-site-on-dark-muted">
         {label}
       </span>
-      <span className="text-2xl font-semibold text-text-primary">{value}</span>
+      <span className="text-2xl font-semibold text-site-on-dark">{value}</span>
     </div>
   );
 }
