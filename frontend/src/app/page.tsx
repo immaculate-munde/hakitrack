@@ -1,140 +1,169 @@
-"use client";
-
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Phone, Scale, Shield } from "lucide-react";
-import { ThemeToggle } from "@/components/layout/ThemeToggle";
-import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
-import { Pill } from "@/components/ui/Badge";
+import { SiteShell } from "@/components/layout/SiteShell";
+
+const SERVICES = [
+  { label: "Case Status", href: "/family/login" },
+  { label: "Know Your Rights", href: "/#services" },
+  { label: "Legal Aid", href: "/#services" },
+  { label: "SMS Alerts", href: "/#services" },
+];
+
+const ADVANTAGES = [
+  "Instant USSD Access",
+  "Real-time Clerk Updates",
+  "Swahili-first Experience",
+];
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-background">
-      <header className="mx-auto flex max-w-7xl items-center justify-between px-4 py-6 md:px-8">
-        <div className="flex items-center gap-2">
-          <Scale className="h-6 w-6 text-accent" />
-          <span className="text-lg font-semibold text-text-primary">HakiTrack</span>
-        </div>
-        <ThemeToggle />
-      </header>
-
-      <main className="mx-auto max-w-7xl px-4 pb-16 md:px-8">
-        <section className="py-10 md:py-16">
-          <p className="text-sm uppercase tracking-wider text-accent">
-            Justice access for every family
-          </p>
-          <h1 className="mt-3 max-w-3xl text-4xl font-bold text-text-primary md:text-5xl">
-            Check bail status, court dates, and holding locations by phone.
-          </h1>
-          <p className="mt-4 max-w-2xl text-lg text-text-muted">
-            HakiTrack gives families instant case updates through USSD and SMS
-            reminders — no long trips to the court registry.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="/admin/login">
-              <Button>
-                Clerk Login
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-            <Button variant="ghost" type="button">
-              Dial *384*XYZ#
-            </Button>
+    <SiteShell>
+      {/* Hero — library backdrop, three-column */}
+      <section className="hero-library-bg text-white">
+        <div className="mx-auto grid min-h-[78vh] max-w-[1400px] items-center gap-10 px-6 py-16 md:grid-cols-[1fr_auto_1fr] md:px-10">
+          <div className="max-w-md">
+            <h1 className="text-3xl font-medium leading-tight md:text-4xl lg:text-5xl">
+              Guiding families through Kenya&apos;s justice system
+            </h1>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link
+                href="/family/login"
+                className="site-ghost-btn site-ghost-btn-light px-5 py-2.5 text-xs tracking-[0.14em] uppercase"
+              >
+                Track Your Case
+              </Link>
+              <Link
+                href="/admin/login"
+                className="site-ghost-btn site-ghost-btn-light px-5 py-2.5 text-xs tracking-[0.14em] uppercase"
+              >
+                Clerk Access
+              </Link>
+            </div>
           </div>
-        </section>
 
-        <section className="grid gap-6 lg:grid-cols-[2fr_1fr]">
-          <Card className="overflow-hidden">
-            <div className="hero-gradient hero-grid h-48 border-b border-border" />
-            <div className="-mt-20 px-6 pb-6">
-              <div className="rounded-2xl border border-border bg-surface/95 p-6 backdrop-blur">
-                <h2 className="text-2xl font-bold text-text-primary">
-                  Public USSD Lookup
-                </h2>
-                <p className="mt-3 text-sm leading-6 text-text-muted">
-                  Relatives dial in, enter a case number like CR-2026-089, and
-                  instantly receive bail amount, next hearing date, court station,
-                  and holding location.
-                </p>
-                <div className="mt-5 flex flex-wrap gap-2">
-                  <Pill>Case lookup</Pill>
-                  <Pill>SMS reminders</Pill>
-                  <Pill>Works on any phone</Pill>
-                </div>
-                <div className="mt-5 rounded-xl border border-border bg-surface-elevated p-4 font-mono text-sm text-text-primary">
-                  <p>Karibu HakiTrack.</p>
-                  <p>Enter case number:</p>
-                  <p className="text-accent">CR2026089</p>
-                  <p className="mt-2 text-text-muted">
-                    Status: Bail Set · KES 50,000 · 15 Sep 2026
-                  </p>
-                </div>
-              </div>
-            </div>
-          </Card>
+          <div className="relative mx-auto h-[360px] w-[240px] overflow-hidden md:h-[420px] md:w-[280px]">
+            <Image
+              src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=800&q=80"
+              alt="Legal professionals reviewing case documents"
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
 
-          <Card className="p-6">
-            <div className="flex items-center gap-2">
-              <Shield className="h-5 w-5 text-accent" />
-              <h2 className="text-xl font-semibold text-text-primary">
-                Clerk Dashboard
-              </h2>
-            </div>
-            <p className="mt-2 text-sm text-text-muted">
-              Court clerks update case records in real time. Changes appear
-              immediately on USSD.
+          <div className="max-w-sm justify-self-end text-sm leading-7 text-white/80 md:text-base">
+            <p>
+              Elite access to case status, bail amounts, and court dates — by
+              phone. Precision, dignity, and unwavering commitment for every
+              family navigating Kenya&apos;s courts.
             </p>
-            <div className="mt-6 space-y-3">
-              <div className="rounded-xl border border-border bg-surface-elevated px-4 py-3">
-                <p className="text-xs uppercase tracking-wider text-text-muted">
-                  Demo case
-                </p>
-                <p className="mt-1 font-medium text-text-primary">CR-2026-089</p>
-              </div>
-              <div className="rounded-xl border border-border bg-surface-elevated px-4 py-3">
-                <p className="text-xs uppercase tracking-wider text-text-muted">
-                  Update flow
-                </p>
-                <p className="mt-1 text-sm text-text-muted">
-                  Remanded → Bail Set → USSD refresh
-                </p>
-              </div>
-            </div>
-            <Link href="/admin/login" className="mt-6 block">
-              <Button className="w-full">
-                <Phone className="h-4 w-4" />
-                Open Clerk Portal
-              </Button>
-            </Link>
-          </Card>
-        </section>
+          </div>
+        </div>
+      </section>
 
-        <section className="mt-8">
-          <Card className="overflow-hidden">
-            <div className="border-b border-border bg-accent-muted px-6 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wider text-accent">
-                How it works
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3">
-              {[
-                ["1", "Family dials USSD", "Enter a case number from anywhere."],
-                ["2", "Clerk updates record", "Dashboard changes status, bail, or hearing."],
-                ["3", "Instant visibility", "USSD and SMS reflect the latest information."],
-              ].map(([step, title, copy]) => (
-                <div
-                  key={step}
-                  className="border-b border-border px-6 py-6 md:border-b-0 md:border-r md:last:border-r-0"
-                >
-                  <p className="text-2xl font-semibold text-accent">{step}</p>
-                  <p className="mt-2 font-medium text-text-primary">{title}</p>
-                  <p className="mt-1 text-sm text-text-muted">{copy}</p>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </section>
-      </main>
-    </div>
+      {/* Services — dark section with mono label */}
+      <section id="services" className="bg-site-dark px-6 py-20 text-site-on-dark md:px-10">
+        <div className="mx-auto max-w-[1400px]">
+          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+            <p className="site-mono-label text-sm">[ Justice Access Channels ]</p>
+            <Link
+              href="/admin/login"
+              className="site-ghost-btn site-ghost-btn-light self-start px-5 py-2 text-xs tracking-[0.14em] uppercase"
+            >
+              See All Services
+            </Link>
+          </div>
+
+          <h2 className="mt-10 max-w-3xl text-3xl font-light leading-tight md:text-5xl">
+            Specialized guidance across critical legal journeys
+          </h2>
+
+          <div className="mt-20 grid grid-cols-2 gap-8 md:grid-cols-4">
+            {SERVICES.map((service) => (
+              <Link
+                key={service.label}
+                href={service.href}
+                className="site-mono-label text-sm uppercase transition-opacity hover:opacity-70 md:text-base"
+              >
+                {service.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Split — image left, dark panel right */}
+      <section className="grid min-h-[520px] md:grid-cols-2">
+        <div className="relative min-h-[320px] md:min-h-full">
+          <Image
+            src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80"
+            alt="Modern court registry workspace"
+            fill
+            className="object-cover"
+          />
+        </div>
+
+        <div className="flex flex-col justify-center bg-site-dark px-8 py-16 text-site-on-dark md:px-14">
+          <p className="site-mono-label text-sm">[ The HakiTrack Advantage ]</p>
+          <h2 className="mt-8 max-w-lg text-3xl font-light leading-tight md:text-4xl">
+            Precision, transparency, and dignity define our practice
+          </h2>
+
+          <div className="mt-16 space-y-0">
+            {ADVANTAGES.map((item, index) => (
+              <div
+                key={item}
+                className={index > 0 ? "site-dotted-rule pt-8" : "pb-8"}
+              >
+                <p className="site-mono-label text-right text-sm uppercase md:text-base">
+                  {item}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* How it works */}
+      <section
+        id="how-it-works"
+        className="bg-site-dark-elevated px-6 py-20 text-site-on-dark md:px-10"
+      >
+        <div className="mx-auto max-w-[1400px]">
+          <p className="site-mono-label text-sm">[ How It Works ]</p>
+          <div className="mt-12 grid gap-10 md:grid-cols-3">
+            {[
+              {
+                step: "01",
+                title: "Dial USSD",
+                copy: "Families enter a case number from any phone — no smartphone required.",
+              },
+              {
+                step: "02",
+                title: "Clerk updates record",
+                copy: "Court staff update bail, status, and hearing dates in the registry dashboard.",
+              },
+              {
+                step: "03",
+                title: "Instant visibility",
+                copy: "USSD and SMS reflect the latest information immediately.",
+              },
+            ].map((item) => (
+              <div key={item.step} className="border-t border-site-border pt-8">
+                <p className="site-mono-label text-xs">{item.step}</p>
+                <h3 className="mt-4 text-xl font-medium">{item.title}</h3>
+                <p className="mt-3 text-sm leading-7 text-site-on-dark-muted">{item.copy}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="site-panel mt-16 rounded-sm p-6 font-mono text-sm leading-7 text-site-on-dark-muted">
+            <p>Karibu HakiTrack</p>
+            <p>1. Angalia kesi  2. Haki zako  3. Msaada wa kisheria</p>
+            <p className="mt-2 text-site-mono">CR2026089 → Bail Set · KES 50,000</p>
+          </div>
+        </div>
+      </section>
+    </SiteShell>
   );
 }
