@@ -52,7 +52,7 @@ const demoCases: SeedCase[] = [
   {
     case_number: "CR-2026-012",
     defendant_name: "Mary Wanjiku",
-    court_station: "Nairobi Law Courts",
+    court_station: "Makadara Law Courts",
     current_status: "REMANDED",
     bail_amount: null,
     next_hearing_date: "2026-08-25T10:30:00.000Z",
@@ -103,6 +103,28 @@ const demoCases: SeedCase[] = [
     holding_location: "Kisumu Remand",
     judge_name: "Hon. Justice L. Onyango",
     notes: "Transfer demo case",
+  },
+  {
+    case_number: "CR-2026-033",
+    defendant_name: "Anne Njeri",
+    court_station: "Kiambu Law Courts",
+    current_status: "HEARING_SCHEDULED",
+    bail_amount: 15000,
+    next_hearing_date: "2026-09-08T09:00:00.000Z",
+    holding_location: "Kiambu GK Prison",
+    judge_name: "Hon. Justice P. Waweru",
+    notes: "Kiambu county demo",
+  },
+  {
+    case_number: "CR-2026-044",
+    defendant_name: "Samuel Kiprop",
+    court_station: "Kajiado Law Courts",
+    current_status: "REMANDED",
+    bail_amount: 25000,
+    next_hearing_date: "2026-09-12T10:00:00.000Z",
+    holding_location: "Kajiado Remand",
+    judge_name: "Hon. Justice M. Tanui",
+    notes: "Kajiado county demo",
   },
 ];
 
