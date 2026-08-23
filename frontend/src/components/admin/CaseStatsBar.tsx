@@ -20,12 +20,10 @@ export function CaseStatsBar({
   const days = daysUntil(caseRecord.next_hearing_date);
 
   return (
-    <Card className="overflow-hidden">
-      <div className="border-b border-border bg-accent-muted px-6 py-3">
+    <Card className="site-panel overflow-hidden">
+      <div className="site-dotted-rule border-t-0 bg-site-dark-elevated px-6 py-3">
         <div className="flex items-center justify-between gap-3">
-          <p className="text-xs font-semibold uppercase tracking-wider text-accent">
-            Case Overview
-          </p>
+          <p className="site-mono-label text-xs uppercase">Case Overview</p>
           <Badge status={caseRecord.current_status} />
         </div>
       </div>
@@ -41,7 +39,7 @@ export function CaseStatsBar({
         />
         <StatCell label="Status Changes" value={auditCount} />
       </div>
-      <div className="border-t border-border px-6 py-3 text-xs text-text-muted">
+      <div className="border-t border-site-border px-6 py-3 text-xs text-site-on-dark-muted">
         Current status: {STATUS_LABELS[caseRecord.current_status]}
       </div>
     </Card>
