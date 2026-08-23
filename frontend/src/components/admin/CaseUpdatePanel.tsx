@@ -28,6 +28,9 @@ export function CaseUpdatePanel({ caseRecord }: { caseRecord: CaseRecord }) {
     caseRecord.holding_location ?? "",
   );
   const [notes, setNotes] = useState(caseRecord.notes ?? "");
+  const [familyPhone, setFamilyPhone] = useState(
+    caseRecord.family_contact_phone ?? "",
+  );
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -50,6 +53,7 @@ export function CaseUpdatePanel({ caseRecord }: { caseRecord: CaseRecord }) {
             : null,
           holding_location: holdingLocation || null,
           notes: notes || null,
+          family_contact_phone: familyPhone || null,
         }),
       });
 
@@ -68,12 +72,13 @@ export function CaseUpdatePanel({ caseRecord }: { caseRecord: CaseRecord }) {
   }
 
   return (
-    <Card className="p-6">
+    <Card className="site-panel p-6">
       <div className="space-y-1">
-        <h2 className="text-xl font-semibold text-text-primary">
+        <p className="site-mono-label text-xs">[ Update Case ]</p>
+        <h2 className="text-xl font-light text-site-on-dark">
           Update Case Status
         </h2>
-        <p className="text-sm text-text-muted">
+        <p className="text-sm text-site-on-dark-muted">
           Changes reflect instantly on USSD
         </p>
       </div>
@@ -107,6 +112,12 @@ export function CaseUpdatePanel({ caseRecord }: { caseRecord: CaseRecord }) {
           value={holdingLocation}
           onChange={(event) => setHoldingLocation(event.target.value)}
           placeholder="Industrial Area Remand"
+        />
+        <Input
+          label="Family Contact Phone"
+          value={familyPhone}
+          onChange={(event) => setFamilyPhone(event.target.value)}
+          placeholder="254712345678"
         />
         <Input
           label="Internal Notes"
