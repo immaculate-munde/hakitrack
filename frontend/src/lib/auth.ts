@@ -18,6 +18,13 @@ import { createServiceClient } from "@/lib/supabase/server";
 export { AUTH_COOKIE, FAMILY_AUTH_COOKIE };
 export { createFamilyToken, parseFamilyToken };
 
+export type FamilyMember = {
+  id: string;
+  full_name: string;
+  email: string;
+  phone_number: string;
+};
+
 export function verifyPin(pin: string): boolean {
   const expected = process.env.CLERK_PIN ?? "1234";
   return pin === expected;
@@ -30,12 +37,12 @@ export function setClerkAuthCookie(response: NextResponse): NextResponse {
 
 export function setFamilyAuthCookie(
   response: NextResponse,
-  caseId: string,
+  memberId: string,
   phone: string,
 ): NextResponse {
   response.cookies.set(
     FAMILY_AUTH_COOKIE,
-    createFamilyToken(caseId, normalizePhoneForDb(phone)),
+    createFamilyToken(memberId, normalizePhoneForDb(phone)),
     cookieOptions(),
   );
   return response;
@@ -57,7 +64,7 @@ function cookieOptions() {
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax" as const,
     path: "/",
-    maxAge: 60 * 60 * 24,
+    maxAge: 60 * 60 * 24 * 7,
   };
 }
 
@@ -67,7 +74,7 @@ export async function isClerkAuthenticated(): Promise<boolean> {
 }
 
 export async function getFamilySession(): Promise<{
-  caseId: string;
+  memberId: string;
   phone: string;
 } | null> {
   const cookieStore = await cookies();
@@ -80,7 +87,7 @@ export function isClerkAuthenticatedRequest(request: NextRequest): boolean {
 
 export function getFamilySessionFromRequest(
   request: NextRequest,
-): { caseId: string; phone: string } | null {
+): { memberId: string; phone: string } | null {
   return parseFamilyToken(request.cookies.get(FAMILY_AUTH_COOKIE)?.value);
 }
 
@@ -93,6 +100,75 @@ export function verifyCronSecret(request: NextRequest): boolean {
   const expected = process.env.CRON_SECRET;
   if (!expected) return false;
   return secret === `Bearer ${expected}`;
+}
+
+export async function getFamilyMember(
+  memberId: string,
+): Promise<FamilyMember | null> {
+  const supabase = createServiceClient();
+  const { data } = await supabase
+    .from("family_members")
+    .select("id, full_name, email, phone_number")
+    .eq("id", memberId)
+    .maybeSingle();
+
+  return (data as FamilyMember | null) ?? null;
+}
+
+export async function registerFamilyMember(
+  fullName: string,
+  email: string,
+  phone: string,
+): Promise<{ memberId: string; phone: string } | { error: string }> {
+  const supabase = createServiceClient();
+  const normalizedPhone = normalizePhoneForDb(phone);
+  const normalizedEmail = email.trim().toLowerCase();
+  const trimmedName = fullName.trim();
+
+  if (!trimmedName || !normalizedEmail || !normalizedPhone) {
+    return { error: "Name, email, and phone are required." };
+  }
+
+  const { data: existing } = await supabase
+    .from("family_members")
+    .select("id")
+    .eq("email", normalizedEmail)
+    .maybeSingle();
+
+  if (existing) {
+    const { data, error } = await supabase
+      .from("family_members")
+      .update({
+        full_name: trimmedName,
+        phone_number: normalizedPhone,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", existing.id)
+      .select("id, phone_number")
+      .single();
+
+    if (error || !data) {
+      return { error: "Could not update your account. Try again." };
+    }
+
+    return { memberId: data.id, phone: data.phone_number };
+  }
+
+  const { data, error } = await supabase
+    .from("family_members")
+    .insert({
+      full_name: trimmedName,
+      email: normalizedEmail,
+      phone_number: normalizedPhone,
+    })
+    .select("id, phone_number")
+    .single();
+
+  if (error || !data) {
+    return { error: "Could not create your account. Try again." };
+  }
+
+  return { memberId: data.id, phone: data.phone_number };
 }
 
 export async function verifyFamilyCaseAccess(
@@ -124,9 +200,25 @@ export async function verifyFamilyCaseAccess(
   return Boolean(subscriber);
 }
 
-export async function authenticateFamilyLogin(
-  caseNumber: string,
+export async function subscribePhoneToCase(
+  caseId: string,
   phone: string,
+): Promise<void> {
+  const supabase = createServiceClient();
+  const normalizedPhone = normalizePhoneForDb(phone);
+
+  await supabase.from("case_subscribers").upsert(
+    {
+      case_id: caseId,
+      phone_number: normalizedPhone,
+    },
+    { onConflict: "case_id,phone_number" },
+  );
+}
+
+export async function lookupFamilyCase(
+  phone: string,
+  caseNumber: string,
 ): Promise<{ caseId: string } | { error: string }> {
   const supabase = createServiceClient();
   const normalized = normalizeCaseNumber(caseNumber);
@@ -154,9 +246,11 @@ export async function authenticateFamilyLogin(
   if (!phoneAllowed) {
     return {
       error:
-        "Phone not registered for this case. Subscribe via USSD (option 1) or ask the court clerk to link your number.",
+        "Your phone is not linked to this case yet. Ask the court clerk to register your number, or subscribe via USSD (*384*XYZ#).",
     };
   }
+
+  await subscribePhoneToCase(caseRecord.id, normalizedPhone);
 
   return { caseId: caseRecord.id };
 }
