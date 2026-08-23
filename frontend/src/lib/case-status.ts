@@ -30,6 +30,7 @@ export type CaseRecord = {
   holding_location: string | null;
   judge_name: string | null;
   notes: string | null;
+  family_contact_phone: string | null;
   last_updated: string;
 };
 
