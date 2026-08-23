@@ -17,6 +17,8 @@ USSD case and bail status tracker for Kenya. Families dial in to check court dat
 - SMS reminder opt-in from USSD (day before hearing)
 - SMS fallback for legal aid directory (other counties)
 - PIN-protected clerk dashboard
+- Family web dashboard (case number + registered phone)
+- Accessibility statement and privacy policy pages
 - Dark + light mode UI
 - Mock CTS database for hackathon demos
 
@@ -37,6 +39,7 @@ hakitrack/
 2. Run migrations in order via the SQL editor:
    - `supabase/migrations/001_cases_schema.sql`
    - `supabase/migrations/002_legal_aid_schema.sql`
+   - `supabase/migrations/003_family_access.sql`
 3. Copy project URL and keys
 
 ### 2. Environment
@@ -136,15 +139,27 @@ curl -X POST http://localhost:3000/api/cron/reminders \
   -H "Authorization: Bearer YOUR_CRON_SECRET"
 ```
 
+## User roles
+
+| Role | Login | Dashboard | Access |
+|------|-------|-----------|--------|
+| **Clerk** | `/admin/login` (PIN) | `/admin` | Create and update cases, set family contact phone |
+| **Family** | `/family/login` (case # + phone) | `/family` | Read-only case status, USSD tracking instructions |
+
+Family login accepts the phone registered on the case (`family_contact_phone`) or a number subscribed via USSD (option 1).
+
+**Demo family login:** case `CR-2026-089`, phone `254711111111` (after seed + migration 003).
+
 ## Demo script
 
 1. Dial USSD and query `CR2026089`
 2. Log in to `/admin/login` with clerk PIN
 3. Open `CR-2026-089` and change status to **Bail Set**
 4. Re-dial USSD — status updates instantly
-5. Opt in to SMS reminders from USSD (`1`)
-6. Trigger `/api/cron/reminders` to send day-before SMS
-7. Demo branch 2 (rights) and branch 3 (legal aid)
+5. Log in at `/family/login` with the demo case and phone — dashboard reflects clerk updates
+6. Opt in to SMS reminders from USSD (`1`)
+7. Trigger `/api/cron/reminders` to send day-before SMS
+8. Demo branch 2 (rights) and branch 3 (legal aid)
 
 ## Pitch statistic
 
@@ -158,6 +173,9 @@ Before presenting, verify and cite one current Kenya-specific statistic on pretr
 | `GET/POST /api/cases` | List / create cases (clerk auth) |
 | `GET/PATCH/DELETE /api/cases/[id]` | Case CRUD |
 | `POST /api/auth/login` | Clerk PIN login |
+| `POST /api/family/login` | Family case number + phone login |
+| `DELETE /api/family/logout` | Family sign out |
+| `GET /api/family/case` | Family case snapshot (auth required) |
 | `POST /api/cron/reminders` | Send hearing reminders |
 
 ## Future production path
