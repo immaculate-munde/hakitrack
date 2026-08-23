@@ -11,8 +11,11 @@ USSD case and bail status tracker for Kenya. Families dial in to check court dat
 
 ## Features
 
+- **USSD main menu:** case status, know your rights, legal aid directory
+- **Swahili-first** with English via `*9` at any step
 - USSD case lookup by case number (`*384*XYZ#`)
 - SMS reminder opt-in from USSD (day before hearing)
+- SMS fallback for legal aid directory (other counties)
 - PIN-protected clerk dashboard
 - Dark + light mode UI
 - Mock CTS database for hackathon demos
@@ -31,7 +34,9 @@ hakitrack/
 ### 1. Supabase
 
 1. Create a project at [supabase.com](https://supabase.com)
-2. Run the migration in `supabase/migrations/001_cases_schema.sql` via the SQL editor
+2. Run migrations in order via the SQL editor:
+   - `supabase/migrations/001_cases_schema.sql`
+   - `supabase/migrations/002_legal_aid_schema.sql`
 3. Copy project URL and keys
 
 ### 2. Environment
@@ -60,11 +65,53 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000)
 
-### 4. Seed demo cases
+### 4. Seed demo data
 
 ```bash
 cd frontend
 npm run seed
+npm run seed:legal-aid
+```
+
+Verify legal aid helpline numbers against each organization's official site before production.
+
+## USSD menu (v2)
+
+```
+Karibu HakiTrack
+1. Angalia kesi (Case status)
+2. Haki zako (Know your rights)
+3. Msaada wa kisheria (Find legal aid)
+0. Toka (Exit)
+(Kiingereza: *9)
+```
+
+- **Branch 1:** existing case lookup + SMS subscribe
+- **Branch 2:** static constitutional rights (Article 49)
+- **Branch 3:** county → case type → providers (SMS fallback for "Other")
+
+### USSD test examples
+
+```bash
+# Main menu
+curl -X POST http://localhost:3000/api/ussd \
+  -H "Content-Type: application/json" \
+  -d '{"sessionId":"1","serviceCode":"*384*1#","phoneNumber":"+254711111111","text":""}'
+
+# Case lookup (branch 1)
+curl -X POST http://localhost:3000/api/ussd \
+  -H "Content-Type: application/json" \
+  -d '{"sessionId":"1","serviceCode":"*384*1#","phoneNumber":"+254711111111","text":"1*CR2026089"}'
+
+# Rights menu (branch 2)
+curl -X POST http://localhost:3000/api/ussd \
+  -H "Content-Type: application/json" \
+  -d '{"sessionId":"1","serviceCode":"*384*1#","phoneNumber":"+254711111111","text":"2*1"}'
+
+# Legal aid — Nairobi + family (branch 3)
+curl -X POST http://localhost:3000/api/ussd \
+  -H "Content-Type: application/json" \
+  -d '{"sessionId":"1","serviceCode":"*384*1#","phoneNumber":"+254711111111","text":"3*1*1"}'
 ```
 
 ## Africa's Talking
@@ -97,6 +144,11 @@ curl -X POST http://localhost:3000/api/cron/reminders \
 4. Re-dial USSD — status updates instantly
 5. Opt in to SMS reminders from USSD (`1`)
 6. Trigger `/api/cron/reminders` to send day-before SMS
+7. Demo branch 2 (rights) and branch 3 (legal aid)
+
+## Pitch statistic
+
+Before presenting, verify and cite one current Kenya-specific statistic on pretrial detention or bail access gaps (e.g. from NCAJ or Judiciary reports). Do not use uncited figures in the pitch.
 
 ## API routes
 
