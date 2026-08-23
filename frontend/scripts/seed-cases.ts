@@ -35,6 +35,7 @@ type SeedCase = {
   holding_location: string | null;
   judge_name: string | null;
   notes: string;
+  family_contact_phone?: string | null;
 };
 
 const demoCases: SeedCase[] = [
@@ -48,6 +49,7 @@ const demoCases: SeedCase[] = [
     holding_location: "Industrial Area Remand",
     judge_name: "Hon. Justice W. Odunga",
     notes: "Primary USSD demo case",
+    family_contact_phone: "254711111111",
   },
   {
     case_number: "CR-2026-012",
