@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
-import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
 export function PageHeader({
   title,
@@ -37,10 +36,7 @@ export function PageHeader({
           ) : null}
         </div>
       </div>
-      <div className="flex items-center gap-3">
-        {action}
-        <ThemeToggle />
-      </div>
+      {action ? <div className="flex items-center gap-3">{action}</div> : null}
     </div>
   );
 }
