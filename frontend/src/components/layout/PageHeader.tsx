@@ -16,21 +16,24 @@ export function PageHeader({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-      <div className="space-y-3">
+    <div className="mb-10 flex flex-col gap-4 border-b border-site-border pb-8 md:flex-row md:items-start md:justify-between">
+      <div className="space-y-4">
         {backHref ? (
           <Link
             href={backHref}
-            className="inline-flex items-center gap-1 text-sm text-text-muted hover:text-text-primary"
+            className="inline-flex items-center gap-1 text-sm text-site-on-dark-muted hover:text-site-on-dark"
           >
             <ChevronLeft className="h-4 w-4" />
             {backLabel}
           </Link>
         ) : null}
         <div>
-          <h1 className="text-3xl font-bold text-text-primary">{title}</h1>
+          <p className="site-mono-label text-xs">[ Case Registry ]</p>
+          <h1 className="mt-2 text-3xl font-light text-site-on-dark md:text-4xl">
+            {title}
+          </h1>
           {subtitle ? (
-            <p className="mt-1 text-sm text-text-muted">{subtitle}</p>
+            <p className="mt-2 text-sm text-site-on-dark-muted">{subtitle}</p>
           ) : null}
         </div>
       </div>
