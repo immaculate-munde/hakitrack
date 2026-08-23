@@ -22,18 +22,18 @@ export function CaseHeroCard({ caseRecord }: { caseRecord: CaseRecord }) {
   }
 
   return (
-    <Card className="overflow-hidden">
+    <Card className="site-panel overflow-hidden">
       <div className="hero-gradient hero-grid h-40 border-b border-border" />
       <div className="-mt-16 px-6 pb-6">
-        <div className="rounded-2xl border border-border bg-surface/95 p-6 backdrop-blur">
+        <div className="site-panel rounded-2xl p-6 backdrop-blur">
           <div className="space-y-3">
-            <h2 className="text-2xl font-bold text-text-primary">
+            <h2 className="text-2xl font-light text-site-on-dark">
               {caseRecord.case_number}
             </h2>
-            <p className="text-text-primary">{caseRecord.defendant_name}</p>
-            <p className="text-sm text-text-muted">{caseRecord.court_station}</p>
+            <p className="text-site-on-dark">{caseRecord.defendant_name}</p>
+            <p className="text-sm text-site-on-dark-muted">{caseRecord.court_station}</p>
             {caseRecord.judge_name ? (
-              <p className="text-sm text-text-muted">
+              <p className="text-sm text-site-on-dark-muted">
                 Judge: {caseRecord.judge_name}
               </p>
             ) : null}
