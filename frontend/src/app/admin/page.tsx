@@ -68,7 +68,7 @@ export default async function AdminPage({
 
       <div className="space-y-4">
         {(cases ?? []).length === 0 ? (
-          <p className="text-text-muted">
+          <p className="text-site-on-dark-muted">
             No cases found. Run the seed script or create a new case.
           </p>
         ) : (
