@@ -11,8 +11,8 @@ export function getClerkToken(): string {
     .digest("hex");
 }
 
-export function createFamilyToken(caseId: string, phone: string): string {
-  const payload = `${caseId}:${phone}`;
+export function createFamilyToken(memberId: string, phone: string): string {
+  const payload = `${memberId}:${phone}`;
   const signature = crypto
     .createHmac("sha256", authSecret())
     .update(`family:${payload}`)
@@ -22,7 +22,7 @@ export function createFamilyToken(caseId: string, phone: string): string {
 
 export function parseFamilyToken(
   token: string | undefined,
-): { caseId: string; phone: string } | null {
+): { memberId: string; phone: string } | null {
   if (!token) return null;
 
   try {
@@ -35,7 +35,7 @@ export function parseFamilyToken(
     const payloadColon = payload.indexOf(":");
     if (payloadColon === -1) return null;
 
-    const caseId = payload.slice(0, payloadColon);
+    const memberId = payload.slice(0, payloadColon);
     const phone = payload.slice(payloadColon + 1);
 
     const expected = crypto
@@ -44,7 +44,7 @@ export function parseFamilyToken(
       .digest("hex");
 
     if (signature !== expected) return null;
-    return { caseId, phone };
+    return { memberId, phone };
   } catch {
     return null;
   }
