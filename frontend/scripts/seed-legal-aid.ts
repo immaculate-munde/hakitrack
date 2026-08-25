@@ -125,7 +125,7 @@ async function main() {
   for (const provider of providers) {
     const { data, error } = await supabase
       .from("legal_aid_providers")
-      .upsert(provider, { onConflict: "id" })
+      .upsert(provider, { onConflict: "name,county" })
       .select("*")
       .maybeSingle();
 

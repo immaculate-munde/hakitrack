@@ -2,6 +2,7 @@
 import { createServiceClient } from "@/lib/supabase/server";
 import { sendSMS } from "@/lib/sms";
 import { ussdResponse } from "./formatters";
+import { Lang } from "./language";  
 
 const COUNTIES: Record<string, string> = {
   "1": "Nairobi",
@@ -44,10 +45,17 @@ export async function handleLegalAidBranch(
     const smsSentText = lang === "sw"
       ? "Tumekutumia SMS yenye orodha ya msaada wa kisheria. Asante."
       : "We sent an SMS with legal aid providers. Thank you.";
-    return ussdResponse("END", smsSentText);
+    return ussdResponse("END", smsSentText, lang);
   }
 
-  const county = COUNTIES[countyChoice] ?? "Nairobi";
+  const county = COUNTIES[countyChoice];
+  if (!county) {
+    const invalidText =
+      lang === "sw"
+        ? "Chaguo si sahihi. Tafadhali jaribu tena."
+        : "Invalid choice. Please try again.";
+    return ussdResponse("END", invalidText, lang);
+  }
 
   // Step 1: Prompt for Case Type Selection
   if (steps.length === 1) {
@@ -75,7 +83,7 @@ export async function handleLegalAidBranch(
 
   const body = [header, ...providerLines, footer].join("\n").slice(0, 182);
 
-  return ussdResponse("END", body);
+  return ussdResponse("END", body, lang);
 }
 
 async function getProviders(county: string, caseCategory: string) {
@@ -113,3 +121,8 @@ async function sendLegalAidSMS(phoneNumber: string, county: string) {
   const message = `HakiTrack - Msaada wa Kisheria (${county}):\n` + lines.join("\n");
   await sendSMS(phoneNumber, message);
 }
+
+
+
+
+
