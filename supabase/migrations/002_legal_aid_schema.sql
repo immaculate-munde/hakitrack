@@ -10,7 +10,6 @@ create table if not exists legal_aid_providers (
   active boolean default true
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
-
 create index if not exists idx_legal_aid_county on legal_aid_providers(county);
 create index if not exists idx_legal_aid_case_types on legal_aid_providers using gin (case_types);
 create unique index if not exists idx_legal_aid_name_county on legal_aid_providers (name, county);

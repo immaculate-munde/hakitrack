@@ -20,16 +20,38 @@ export const RIGHTS_MENU = {
   },
 } as const;
 
+export const SYSTEM_MESSAGES = {
+  exit: {
+    en: "Thank you for using HakiTrack.",
+    sw: "Asante kwa kutumia HakiTrack.",
+  },
+  invalidChoice: {
+    en: "Invalid choice. Please try again.",
+    sw: "Chaguo si sahihi. Tafadhali jaribu tena.",
+  },
+};
+
 export function handleRightsBranch(steps: string[], lang: "sw" | "en"): Response {
   if (steps.length === 0) {
-    const text = RIGHTS_MENU.root[lang] + "\n(Kiingereza: append *9)";
-    return ussdResponse("CON", text);
+    return ussdResponse("CON", RIGHTS_MENU.root[lang], lang);
   }
 
   const choice = steps[0];
-  let key: keyof typeof RIGHTS_MENU = "arrested";
-  if (choice === "2") key = "courtCase";
-  if (choice === "3") key = "general";
 
-  return ussdResponse("END", RIGHTS_MENU[key][lang]);
+  if (choice === "0") {
+    return ussdResponse("END", SYSTEM_MESSAGES.exit[lang], lang);
+  }
+
+  const keyMap: Record<string, keyof typeof RIGHTS_MENU> = {
+    "1": "arrested",
+    "2": "courtCase",
+    "3": "general",
+  };
+
+  const key = keyMap[choice];
+  if (!key) {
+    return ussdResponse("END", SYSTEM_MESSAGES.invalidChoice[lang], lang);
+  }
+
+  return ussdResponse("END", RIGHTS_MENU[key][lang], lang);
 }

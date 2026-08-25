@@ -3,6 +3,7 @@ import { handleCaseBranch } from "@/lib/ussd/case-branch";
 import { formatGoodbye, formatWelcome, ussdResponse } from "@/lib/ussd/formatters";
 import { handleLegalAidBranch } from "@/lib/ussd/legalaid-content";
 import { handleRightsBranch } from "@/lib/ussd/rights-content";
+import { Langar } from "next/font/google";
 
 export type UssdInput = {
   sessionId: string;
@@ -56,8 +57,8 @@ export async function handleUssdSession(input: UssdInput): Promise<Response> {
     case "root":
     default:
       if (steps[0] === "0") {
-        return ussdResponse("END", formatGoodbye(lang));
+        return ussdResponse("END", formatGoodbye(lang), lang);
       }
-      return ussdResponse("CON", formatWelcome(lang));
+      return ussdResponse("CON", formatWelcome(lang),lang);
   }
 }
