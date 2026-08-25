@@ -2,9 +2,9 @@
  * Seed legal aid providers into Supabase.
  *
  * Usage:
- *   cd frontend && npm run seed:legal-aid
+ *   cd frontend && npx tsx scripts/seed-legal-aid.ts
  *
- * Verify helpline numbers against each organization's official site before production.
+ * Requires NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in frontend/.env.local
  */
 
 import { createClient } from "@supabase/supabase-js";
@@ -39,92 +39,83 @@ const providers: SeedProvider[] = [
   {
     name: "Kituo Cha Sheria",
     county: "Nairobi",
-    case_types: ["land", "family", "general", "criminal"],
-    phone_number: "0720253000",
+    case_types: ["land", "family", "human rights", "criminal", "general"],
+    phone_number: "0800720529",
     languages: ["en", "sw"],
     free: true,
-    notes: "Legal aid NGO — verify current helpline before production",
-  },
-  {
-    name: "Kituo Cha Sheria",
-    county: "Mombasa",
-    case_types: ["land", "family", "general", "criminal"],
-    phone_number: "0720253000",
-    languages: ["en", "sw"],
-    free: true,
-    notes: "Coastal outreach — verify current helpline",
-  },
-  {
-    name: "Kituo Cha Sheria",
-    county: "Kisumu",
-    case_types: ["land", "family", "general", "criminal"],
-    phone_number: "0720253000",
-    languages: ["en", "sw"],
-    free: true,
-    notes: "Western Kenya outreach — verify current helpline",
+    notes: "Kenya's oldest legal aid NGO",
   },
   {
     name: "FIDA Kenya",
     county: "Nairobi",
-    case_types: ["family", "general"],
-    phone_number: "0722653730",
+    case_types: ["family", "GBV", "succession", "general"],
+    phone_number: "0800720501",
     languages: ["en", "sw"],
     free: true,
-    notes: "Women's rights and family law — verify current helpline",
+    notes: "Women's rights & family law focus",
   },
   {
-    name: "FIDA Kenya",
-    county: "Nakuru",
-    case_types: ["family", "general"],
-    phone_number: "0722653730",
-    languages: ["en", "sw"],
-    free: true,
-    notes: "Rift Valley outreach — verify current helpline",
-  },
-  {
-    name: "FIDA Kenya",
-    county: "Kisumu",
-    case_types: ["family", "general"],
-    phone_number: "0722653730",
-    languages: ["en", "sw"],
-    free: true,
-    notes: "Western Kenya outreach — verify current helpline",
-  },
-  {
-    name: "FIDA Kenya",
-    county: "Mombasa",
-    case_types: ["family", "general"],
-    phone_number: "0722653730",
-    languages: ["en", "sw"],
-    free: true,
-    notes: "Coast outreach — verify current helpline",
-  },
-  {
-    name: "Legal Resources Foundation",
+    name: "Legal Resources Foundation (LRF)",
     county: "Nairobi",
     case_types: ["criminal", "land", "general"],
-    phone_number: "0203874629",
+    phone_number: "0722209848",
     languages: ["en", "sw"],
     free: true,
-    notes: "Paralegal clinics — verify current contact",
+    notes: "Legal aid clinics + paralegals",
   },
   {
-    name: "Legal Resources Foundation",
-    county: "Nakuru",
-    case_types: ["criminal", "land", "general"],
-    phone_number: "0203874629",
-    languages: ["en", "sw"],
-    free: true,
-    notes: "Rift Valley clinics — verify current contact",
-  },
-  {
-    name: "National Legal Aid Service",
+    name: "National Legal Aid Service (NLAS)",
     county: "All",
-    case_types: ["family", "land", "criminal", "general"],
-    phone_number: "0800720021",
+    case_types: ["family", "land", "criminal", "general", "all"],
+    phone_number: "0800720640",
     languages: ["en", "sw"],
     free: true,
-    notes: "State legal aid body under Legal Aid Act 2016 — verify toll-free line",
+    notes: "Official state legal aid body under Legal Aid Act 2016",
+  },
+  {
+    name: "Kituo Cha Sheria (Coast)",
+    county: "Mombasa",
+    case_types: ["land", "family", "human rights", "criminal"],
+    phone_number: "0800720529",
+    languages: ["en", "sw"],
+    free: true,
+    notes: "Mombasa branch",
+  },
+  {
+    name: "FIDA Kenya (Coast)",
+    county: "Mombasa",
+    case_types: ["family", "GBV", "succession"],
+    phone_number: "0800720501",
+    languages: ["en", "sw"],
+    free: true,
+    notes: "Mombasa branch",
+  },
+  {
+    name: "Kituo Cha Sheria (Western)",
+    county: "Kisumu",
+    case_types: ["land", "family", "human rights", "criminal"],
+    phone_number: "0800720529",
+    languages: ["en", "sw"],
+    free: true,
+    notes: "Kisumu branch",
+  },
+  {
+    name: "FIDA Kenya (Western)",
+    county: "Kisumu",
+    case_types: ["family", "GBV", "succession"],
+    phone_number: "0800720501",
+    languages: ["en", "sw"],
+    free: true,
+    notes: "Kisumu branch",
+  },
+  {
+    name: "Legal Resources Foundation (Rift)",
+    county: "Nakuru",
+    case_types: ["criminal", "land", "general"],
+    phone_number: "0722209848",
+    languages: ["en", "sw"],
+    free: true,
+    notes: "Nakuru branch",
   },
 ];
 
@@ -132,22 +123,24 @@ async function main() {
   console.log("Seeding legal aid providers...");
 
   for (const provider of providers) {
-    const { error } = await supabase.from("legal_aid_providers").upsert(provider, {
-      onConflict: "name,county",
-    });
+    const { data, error } = await supabase
+      .from("legal_aid_providers")
+      .upsert(provider, { onConflict: "id" })
+      .select("*")
+      .maybeSingle();
 
     if (error) {
-      console.error(`Failed to seed ${provider.name} (${provider.county}):`, error.message);
+      console.error(`Failed to seed ${provider.name}:`, error.message);
       continue;
     }
 
-    console.log(`Seeded ${provider.name} — ${provider.county}`);
+    console.log(`Seeded ${provider.name} (${provider.county})`);
   }
 
-  console.log("Done.");
+  console.log("Legal aid providers seed complete.");
 }
 
-main().catch((error) => {
-  console.error(error);
+main().catch((err) => {
+  console.error(err);
   process.exit(1);
 });

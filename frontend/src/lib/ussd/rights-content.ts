@@ -1,35 +1,35 @@
-import type { Lang } from "@/lib/ussd/language";
+// frontend/src/lib/ussd/rights-content.ts
+import { ussdResponse } from "./formatters";
 
 export const RIGHTS_MENU = {
   root: {
-    sw: "Chagua hali yako:\n1. Nimekamatwa\n2. Nina kesi mahakamani\n3. Haki za jumla\n0. Toka",
-    en: "Select your situation:\n1. I was arrested\n2. I have a court case\n3. General rights\n0. Exit",
+    sw: "Chagua hali yako:\n1. Nimekamatwa\n2. Nina kesi mahakamani\n3. Haki za jumla",
+    en: "Select your situation:\n1. I was arrested\n2. I have a court case\n3. General rights",
   },
   arrested: {
-    sw: "Ukikamatwa una haki ya:\n- Kupiga simu moja\n- Kunyamaza\n- Kuonana na wakili\n- Kufika mahakamani ndani ya masaa 24\n(Ibara ya 49, Katiba 2010)\n\nPiga *384*XYZ# tena kwa zaidi.",
-    en: "If arrested you have the right to:\n- One phone call\n- Remain silent\n- See a lawyer\n- Appear in court within 24hrs\n(Article 49, Constitution 2010)\n\nDial *384*XYZ# again for more.",
+    sw: "Ukikamatwa una haki ya:\n- Kunyamaza (Ibara 49(1)(b))\n- Kuwasiliana na wakili (Ibara 49(1)(c))\n- Mahakamani masaa 24 (Ibara 49(1)(f))\n- Dhamana nafuu (Ibara 49(1)(h))",
+    en: "If arrested you have the right to:\n- Remain silent (Art 49(1)(b))\n- Communicate with lawyer (Art 49(1)(c))\n- Court within 24hrs (Art 49(1)(f))\n- Reasonable bail (Art 49(1)(h))",
   },
   courtCase: {
-    sw: "Ukiwa na kesi una haki ya:\n- Wakili\n- Kesi ya haki na ya haraka\n- Dhamana isiyo na ubaguzi\n(Ibara ya 49(1)(h), Katiba 2010)\n\nPiga *384*XYZ# tena kwa zaidi.",
-    en: "If you have a case you have the right to:\n- A lawyer\n- A fair, speedy trial\n- Reasonable bail\n(Article 49(1)(h), Constitution 2010)\n\nDial *384*XYZ# again for more.",
+    sw: "Ukiwa na kesi mahakamani:\n- Haki ya wakili (Ibara 50(2)(g))\n- Kesi bila kuchelewa (Ibara 50(2)(e))\n- Dhamana isiyo na ubaguzi (Ibara 49(1)(h))",
+    en: "If you have a court case:\n- Right to choose lawyer (Art 50(2)(g))\n- Trial without delay (Art 50(2)(e))\n- Right to reasonable bail (Art 49(1)(h))",
   },
   general: {
-    sw: "Haki za msingi:\n- Usiwekwe kizuizini bila sababu ya kisheria\n- Usipigwe kelele au kutendewa vibaya\n- Upate msaada wa kisheria\n(Katiba ya Kenya 2010)\n\nPiga *384*XYZ# tena kwa zaidi.",
-    en: "Basic rights:\n- No detention without legal cause\n- No torture or cruel treatment\n- Access to legal aid\n(Kenya Constitution 2010)\n\nDial *384*XYZ# again for more.",
+    sw: "Haki za Kikatiba (Sura ya 4):\n- Haki ya kuishi na utu (Ibara 26 & 28)\n- Usawa mbele ya sheria (Ibara 27)\n- Uhuru na usalama (Ibara 29)",
+    en: "Constitutional Rights (Ch. 4):\n- Right to life & dignity (Art 26 & 28)\n- Equality before law (Art 27)\n- Freedom & security (Art 29)",
   },
-} as const satisfies Record<string, Record<Lang, string>>;
+} as const;
 
-export type RightsContentKey = "arrested" | "courtCase" | "general";
-
-export function getRightsContentKey(choice: string): RightsContentKey {
-  switch (choice) {
-    case "1":
-      return "arrested";
-    case "2":
-      return "courtCase";
-    case "3":
-      return "general";
-    default:
-      return "general";
+export function handleRightsBranch(steps: string[], lang: "sw" | "en"): Response {
+  if (steps.length === 0) {
+    const text = RIGHTS_MENU.root[lang] + "\n(Kiingereza: append *9)";
+    return ussdResponse("CON", text);
   }
+
+  const choice = steps[0];
+  let key: keyof typeof RIGHTS_MENU = "arrested";
+  if (choice === "2") key = "courtCase";
+  if (choice === "3") key = "general";
+
+  return ussdResponse("END", RIGHTS_MENU[key][lang]);
 }
