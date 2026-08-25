@@ -2,6 +2,7 @@
 import { createServiceClient } from "@/lib/supabase/server";
 import { sendSMS } from "@/lib/sms";
 import { ussdResponse } from "./formatters";
+import { Lang } from "./language";
 
 const COUNTIES: Record<string, string> = {
   "1": "Nairobi",
@@ -113,3 +114,8 @@ async function sendLegalAidSMS(phoneNumber: string, county: string) {
   const message = `HakiTrack - Msaada wa Kisheria (${county}):\n` + lines.join("\n");
   await sendSMS(phoneNumber, message);
 }
+
+
+
+
+
