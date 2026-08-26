@@ -15,7 +15,7 @@ import {
   getUssdIdentity,
   logUssdCaseAccess,
   upsertUssdIdentity,
-  verifyDefendantFirstName,
+  verifyDefendantName,
   type VerificationMethod,
 } from "@/lib/ussd/kyc";
 import type { Lang } from "@/lib/ussd/language";
@@ -195,8 +195,12 @@ async function resolveKyc(
       return { type: "prompt", message: USSD_COPY.kycDefendantPrompt[lang] };
     }
 
-    const defendantInput = kycSteps[2]?.trim() ?? "";
-    if (!verifyDefendantFirstName(defendantInput, caseRecord.defendant_name)) {
+    const defendantInput = getDefendantAnswer(kycSteps);
+    if (!defendantInput) {
+      return { type: "prompt", message: USSD_COPY.kycDefendantPrompt[lang] };
+    }
+
+    if (!verifyDefendantName(defendantInput, caseRecord.defendant_name)) {
       return { type: "failed", message: USSD_COPY.kycFailed[lang] };
     }
 
@@ -212,8 +216,12 @@ async function resolveKyc(
     return { type: "prompt", message: USSD_COPY.kycDefendantPrompt[lang] };
   }
 
-  const defendantInput = kycSteps[1]?.trim() ?? "";
-  if (!verifyDefendantFirstName(defendantInput, caseRecord.defendant_name)) {
+  const defendantInput = getDefendantAnswer(kycSteps);
+  if (!defendantInput) {
+    return { type: "prompt", message: USSD_COPY.kycDefendantPrompt[lang] };
+  }
+
+  if (!verifyDefendantName(defendantInput, caseRecord.defendant_name)) {
     return { type: "failed", message: USSD_COPY.kycFailed[lang] };
   }
 
@@ -222,6 +230,15 @@ async function resolveKyc(
     callerName: identity.full_name,
     method: "defendant_name",
   };
+}
+
+/** Defendant answer is always the last step after the case number. */
+function getDefendantAnswer(kycSteps: string[]): string {
+  if (kycSteps.length < 2) {
+    return "";
+  }
+
+  return kycSteps[kycSteps.length - 1]?.trim() ?? "";
 }
 
 async function handleSubscribe(

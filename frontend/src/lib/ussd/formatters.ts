@@ -52,8 +52,8 @@ export const USSD_COPY = {
     en: "KYC: Enter your full name\n(e.g. Jane Kamau)",
   },
   kycDefendantPrompt: {
-    sw: "Thibitisha uhusiano:\nWeka jina la kwanza la mshtakiwa",
-    en: "Verify your link:\nEnter defendant's first name",
+    sw: "Thibitisha uhusiano:\nWeka jina la mshtakiwa\n(mf. John au Kamau)",
+    en: "Verify your link:\nEnter defendant name\n(e.g. John or Kamau)",
   },
   kycFailed: {
     sw: "Uthibitisho umeshindikana.\nBonyeza 0 kurudi ujaribu tena.",

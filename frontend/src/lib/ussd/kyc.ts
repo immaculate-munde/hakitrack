@@ -8,7 +8,7 @@ export type UssdIdentity = {
 
 export type VerificationMethod = "defendant_name" | "clerk_phone";
 
-export function verifyDefendantFirstName(
+export function verifyDefendantName(
   input: string,
   defendantName: string,
 ): boolean {
@@ -16,17 +16,31 @@ export function verifyDefendantFirstName(
     value.trim().toLowerCase().replace(/[^a-z]/g, "");
 
   const given = normalize(input);
-  const expected = normalize(defendantName.split(/\s+/)[0] ?? "");
-
-  if (given.length < 2 || expected.length < 2) {
+  if (given.length < 2) {
     return false;
   }
 
-  return (
-    given === expected ||
-    expected.startsWith(given) ||
-    given.startsWith(expected)
+  const parts = defendantName
+    .split(/\s+/)
+    .map(normalize)
+    .filter((part) => part.length >= 2);
+
+  if (parts.length === 0) {
+    return false;
+  }
+
+  return parts.some(
+    (part) =>
+      part === given || part.startsWith(given) || given.startsWith(part),
   );
+}
+
+/** @deprecated Use verifyDefendantName */
+export function verifyDefendantFirstName(
+  input: string,
+  defendantName: string,
+): boolean {
+  return verifyDefendantName(input, defendantName);
 }
 
 export async function getUssdIdentity(
