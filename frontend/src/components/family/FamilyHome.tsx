@@ -1,7 +1,7 @@
 "use client";
 
 import { DEMO_FAMILY } from "@/lib/demo-accounts";
-import { Phone, Search } from "lucide-react";
+import { USSD_DIAL_CODE } from "@/lib/ussd/config";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { SiteShell } from "@/components/layout/SiteShell";
@@ -96,7 +96,7 @@ export function FamilyHome({ memberName }: { memberName: string }) {
               Also track via USSD
             </p>
             <p className="mt-1 text-sm text-site-on-dark-muted">
-              Dial *384*XYZ# → option 1 → enter your case number without dashes.
+              Dial {USSD_DIAL_CODE} → option 1 → enter your case number without dashes.
             </p>
           </div>
         </div>

@@ -9,6 +9,7 @@ import {
   getClerkToken,
   parseFamilyToken,
 } from "@/lib/auth-tokens";
+import { USSD_DIAL_CODE } from "@/lib/ussd/config";
 import {
   normalizeCaseNumber,
   normalizePhoneForDb,
@@ -246,7 +247,7 @@ export async function lookupFamilyCase(
   if (!phoneAllowed) {
     return {
       error:
-        "Your phone is not linked to this case yet. Ask the court clerk to register your number, or subscribe via USSD (*384*XYZ#).",
+        `Your phone is not linked to this case yet. Ask the court clerk to register your number, or subscribe via USSD (${USSD_DIAL_CODE}).`,
     };
   }
 

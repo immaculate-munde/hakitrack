@@ -1,5 +1,6 @@
 "use client";
 
+import { USSD_DIAL_CODE } from "@/lib/ussd/config";
 import { Phone } from "lucide-react";
 import { AuditTimeline } from "@/components/admin/AuditTimeline";
 import { CaseHeroCard } from "@/components/admin/CaseHeroCard";
@@ -40,7 +41,7 @@ export function FamilyCaseView({
                 Also track via USSD
               </p>
               <p className="text-sm text-site-on-dark-muted">
-                Dial *384*XYZ# → option 1 → enter{" "}
+                Dial {USSD_DIAL_CODE} → option 1 → enter{" "}
                 {caseRecord.case_number.replace(/-/g, "")}
               </p>
             </div>

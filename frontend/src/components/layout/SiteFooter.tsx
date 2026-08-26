@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
+import { USSD_DIAL_CODE } from "@/lib/ussd/config";
 
 export function SiteFooter() {
   const [email, setEmail] = useState("");
@@ -19,7 +20,7 @@ export function SiteFooter() {
             <p className="text-xs tracking-[0.22em]">HAKITRACK</p>
           </div>
           <div className="text-sm leading-7 text-site-on-dark-muted">
-            <p>Dial *384*XYZ#</p>
+            <p>Dial {USSD_DIAL_CODE}</p>
             <p>info@hakitrack.co.ke</p>
           </div>
           <div className="text-sm leading-7 text-site-on-dark-muted md:text-right">

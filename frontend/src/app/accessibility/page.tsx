@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { SiteShell } from "@/components/layout/SiteShell";
+import { USSD_DIAL_CODE } from "@/lib/ussd/config";
 
 export default function AccessibilityPage() {
   return (
@@ -23,7 +24,7 @@ export default function AccessibilityPage() {
           <section>
             <h2 className="text-lg font-medium text-site-on-dark">USSD access</h2>
             <p className="mt-2">
-              Our primary channel is USSD (*384*XYZ#), designed for low-literacy
+              Our primary channel is USSD ({USSD_DIAL_CODE}), designed for low-literacy
               and non-smartphone users. Menus use plain Swahili with English
               available via the *9 shortcut.
             </p>
@@ -48,7 +49,7 @@ export default function AccessibilityPage() {
               >
                 accessibility@hakitrack.co.ke
               </a>{" "}
-              or dial *384*XYZ# and request clerk assistance.
+              or dial {USSD_DIAL_CODE} and request clerk assistance.
             </p>
           </section>
         </div>
