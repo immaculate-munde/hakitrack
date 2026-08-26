@@ -20,7 +20,8 @@ export function ussdResponse(
       ? withLangFooter(message, lang, "CON", options?.showNav ?? true)
       : message.slice(0, 182);
   return new Response(`${type} ${body}`, {
-    headers: { "Content-Type": "text/plain" },
+    status: 200,
+    headers: { "Content-Type": "text/plain; charset=utf-8" },
   });
 }
 
