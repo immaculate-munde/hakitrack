@@ -2,6 +2,7 @@
 
 import { DEMO_FAMILY } from "@/lib/demo-accounts";
 import { USSD_DIAL_CODE } from "@/lib/ussd/config";
+import { Phone, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { SiteShell } from "@/components/layout/SiteShell";

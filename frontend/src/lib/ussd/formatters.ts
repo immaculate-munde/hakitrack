@@ -51,8 +51,8 @@ export const USSD_COPY = {
     en: "Service unavailable.\nTry again later.\n0. Exit",
   },
   subscribeSuccess: {
-    sw: "Utapata SMS kumbukumbu kabla ya kesi. Asante.",
-    en: "You will receive an SMS reminder before the hearing. Thank you.",
+    sw: "Umesajiliwa! SMS ya uthibitisho imetumwa kwenye simu yako. Asante.",
+    en: "Subscribed! A confirmation SMS was sent to your phone. Thank you.",
   },
   noHearing: {
     sw: "Hakuna kesi iliyoratibiwa bado.",
@@ -111,6 +111,24 @@ export function formatWelcome(lang: Lang): string {
 
 export function formatGoodbye(lang: Lang): string {
   return USSD_COPY.goodbye[lang];
+}
+
+export function formatSubscribeConfirmSms(
+  caseRecord: Pick<
+    CaseRecord,
+    "case_number" | "next_hearing_date" | "court_station" | "current_status"
+  >,
+  lang: Lang,
+): string {
+  const hearing = formatDate(caseRecord.next_hearing_date);
+  const court = shortenCourt(caseRecord.court_station);
+  const status = STATUS_LABELS_I18N[caseRecord.current_status][lang];
+
+  if (lang === "sw") {
+    return `HakiTrack: Umesajiliwa kwa kesi ${caseRecord.case_number}. Hali: ${status}. Kesi: ${hearing}, ${court}. Utapata kumbukumbu siku kabla ya kesi.`;
+  }
+
+  return `HakiTrack: Subscribed to case ${caseRecord.case_number}. Status: ${status}. Hearing: ${hearing}, ${court}. Reminder SMS sent before hearing day.`;
 }
 
 function shortenCourt(name: string): string {

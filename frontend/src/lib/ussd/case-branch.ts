@@ -3,10 +3,12 @@ import {
   normalizePhoneForDb,
   type CaseRecord,
 } from "@/lib/case-status";
+import { sendSMS } from "@/lib/sms";
 import { createServiceClient } from "@/lib/supabase/server";
 import {
   formatCaseStatus,
   formatGoodbye,
+  formatSubscribeConfirmSms,
   ussdResponse,
   USSD_COPY,
 } from "@/lib/ussd/formatters";
@@ -82,7 +84,7 @@ async function handleSubscribe(
 
   const { data: caseRecord } = await supabase
     .from("cases")
-    .select("id, next_hearing_date")
+    .select("id, case_number, next_hearing_date, court_station, current_status")
     .eq("case_number_normalized", normalized)
     .maybeSingle();
 
@@ -106,6 +108,15 @@ async function handleSubscribe(
     console.error("[USSD] Subscribe error:", error);
     return ussdResponse("END", USSD_COPY.subscribeFailed[lang], lang);
   }
+
+  const smsMessage = formatSubscribeConfirmSms(
+    caseRecord as Pick<
+      CaseRecord,
+      "case_number" | "next_hearing_date" | "court_station" | "current_status"
+    >,
+    lang,
+  );
+  await sendSMS(phoneNumber, smsMessage);
 
   return ussdResponse("END", USSD_COPY.subscribeSuccess[lang], lang);
 }
