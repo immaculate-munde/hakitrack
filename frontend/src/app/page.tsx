@@ -28,13 +28,13 @@ export default function HomePage() {
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 href="/family/login"
-                className="site-ghost-btn site-ghost-btn-light px-5 py-2.5 text-xs tracking-[0.14em] uppercase"
+                className="site-ghost-btn site-ghost-btn-on-dark px-5 py-2.5 text-xs tracking-[0.14em] uppercase"
               >
                 Track Your Case
               </Link>
               <Link
                 href="/admin/login"
-                className="site-ghost-btn site-ghost-btn-light px-5 py-2.5 text-xs tracking-[0.14em] uppercase"
+                className="site-ghost-btn site-ghost-btn-on-dark px-5 py-2.5 text-xs tracking-[0.14em] uppercase"
               >
                 Clerk Access
               </Link>
