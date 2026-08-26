@@ -26,6 +26,33 @@ export function Input({ label, className, id, ...props }: InputProps) {
   );
 }
 
+type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
+  label?: string;
+};
+
+export function Textarea({ label, className, id, ...props }: TextareaProps) {
+  const inputId = id ?? label?.toLowerCase().replace(/\s+/g, "-");
+
+  return (
+    <div className="space-y-2">
+      {label ? (
+        <label htmlFor={inputId} className="text-sm text-text-muted">
+          {label}
+        </label>
+      ) : null}
+      <textarea
+        id={inputId}
+        rows={4}
+        className={cn(
+          "w-full rounded-xl border border-border bg-surface-elevated px-4 py-2.5 text-sm text-text-primary outline-none ring-accent focus:ring-2",
+          className,
+        )}
+        {...props}
+      />
+    </div>
+  );
+}
+
 type SelectProps = React.SelectHTMLAttributes<HTMLSelectElement> & {
   label?: string;
   options: Array<{ value: string; label: string }>;

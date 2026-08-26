@@ -43,6 +43,11 @@ type SeedCase = {
   judge_name: string | null;
   notes: string;
   family_contact_phone?: string | null;
+  proceedings_summary?: string | null;
+  last_ruling_summary?: string | null;
+  sentence_outcome?: string | null;
+  petition_guidance?: string | null;
+  kenya_law_url?: string | null;
 };
 
 const demoCases: SeedCase[] = [
@@ -57,6 +62,12 @@ const demoCases: SeedCase[] = [
     judge_name: "Hon. Justice W. Odunga",
     notes: "Primary USSD demo case",
     family_contact_phone: "254711111111",
+    proceedings_summary:
+      "Accused charged with obtaining money by false pretences. Pleaded not guilty on first mention. Prosecution asked for time to prepare witness statements.",
+    last_ruling_summary:
+      "Bail set at KES 50,000 with one surety of like amount. Accused to report to OCS Industrial Area every Monday.",
+    petition_guidance:
+      "If bail is denied at the next mention, apply for review through a lawyer. Appeal against conviction must be filed within 14 days of sentencing under the Criminal Procedure Code.",
   },
   {
     case_number: "CR-2026-012",

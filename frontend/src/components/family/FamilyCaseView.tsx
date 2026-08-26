@@ -5,6 +5,7 @@ import { Phone } from "lucide-react";
 import { AuditTimeline } from "@/components/admin/AuditTimeline";
 import { CaseHeroCard } from "@/components/admin/CaseHeroCard";
 import { CaseStatsBar } from "@/components/admin/CaseStatsBar";
+import { CaseContextPanel } from "@/components/family/CaseContextPanel";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { PageHeader } from "@/components/layout/PageHeader";
 import {
@@ -91,6 +92,7 @@ export function FamilyCaseView({
             subscriberCount={subscriberCount}
             auditCount={auditLogs.length}
           />
+          <CaseContextPanel caseRecord={caseRecord} />
           <AuditTimeline logs={auditLogs} />
         </div>
       </div>

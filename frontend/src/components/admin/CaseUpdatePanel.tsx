@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { Input, Select } from "@/components/ui/Input";
+import { Input, Select, Textarea } from "@/components/ui/Input";
 import {
   CASE_STATUSES,
   CaseRecord,
@@ -31,6 +31,21 @@ export function CaseUpdatePanel({ caseRecord }: { caseRecord: CaseRecord }) {
   const [familyPhone, setFamilyPhone] = useState(
     caseRecord.family_contact_phone ?? "",
   );
+  const [proceedingsSummary, setProceedingsSummary] = useState(
+    caseRecord.proceedings_summary ?? "",
+  );
+  const [lastRulingSummary, setLastRulingSummary] = useState(
+    caseRecord.last_ruling_summary ?? "",
+  );
+  const [sentenceOutcome, setSentenceOutcome] = useState(
+    caseRecord.sentence_outcome ?? "",
+  );
+  const [petitionGuidance, setPetitionGuidance] = useState(
+    caseRecord.petition_guidance ?? "",
+  );
+  const [kenyaLawUrl, setKenyaLawUrl] = useState(
+    caseRecord.kenya_law_url ?? "",
+  );
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -54,6 +69,11 @@ export function CaseUpdatePanel({ caseRecord }: { caseRecord: CaseRecord }) {
           holding_location: holdingLocation || null,
           notes: notes || null,
           family_contact_phone: familyPhone || null,
+          proceedings_summary: proceedingsSummary || null,
+          last_ruling_summary: lastRulingSummary || null,
+          sentence_outcome: sentenceOutcome || null,
+          petition_guidance: petitionGuidance || null,
+          kenya_law_url: kenyaLawUrl || null,
         }),
       });
 
@@ -119,6 +139,45 @@ export function CaseUpdatePanel({ caseRecord }: { caseRecord: CaseRecord }) {
           onChange={(event) => setFamilyPhone(event.target.value)}
           placeholder="254712345678"
         />
+
+        <div className="border-t border-site-border pt-4">
+          <p className="site-mono-label text-xs">[ Family-facing context ]</p>
+          <p className="mt-2 text-xs leading-5 text-site-on-dark-muted">
+            Shown on the family website and included in SMS when provided.
+          </p>
+        </div>
+
+        <Textarea
+          label="Recent proceedings (plain language)"
+          value={proceedingsSummary}
+          onChange={(event) => setProceedingsSummary(event.target.value)}
+          placeholder="e.g. Accused pleaded not guilty. Matter adjourned for prosecution witnesses."
+        />
+        <Textarea
+          label="Last ruling / court direction"
+          value={lastRulingSummary}
+          onChange={(event) => setLastRulingSummary(event.target.value)}
+          placeholder="e.g. Bail set at KES 50,000 with two sureties."
+        />
+        <Textarea
+          label="Sentence or outcome (if any)"
+          value={sentenceOutcome}
+          onChange={(event) => setSentenceOutcome(event.target.value)}
+          placeholder="Leave blank if case is ongoing."
+        />
+        <Textarea
+          label="Petition / appeal guidance"
+          value={petitionGuidance}
+          onChange={(event) => setPetitionGuidance(event.target.value)}
+          placeholder="How the family can petition, appeal, or apply for review."
+        />
+        <Input
+          label="Kenya Law judgment URL (optional)"
+          value={kenyaLawUrl}
+          onChange={(event) => setKenyaLawUrl(event.target.value)}
+          placeholder="https://kenyalaw.org/..."
+        />
+
         <Input
           label="Internal Notes"
           value={notes}

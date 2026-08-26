@@ -31,6 +31,11 @@ export type CaseRecord = {
   judge_name: string | null;
   notes: string | null;
   family_contact_phone: string | null;
+  proceedings_summary: string | null;
+  last_ruling_summary: string | null;
+  sentence_outcome: string | null;
+  petition_guidance: string | null;
+  kenya_law_url: string | null;
   last_updated: string;
 };
 

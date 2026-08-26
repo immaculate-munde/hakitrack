@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { isAuthenticatedRequest, unauthorizedResponse } from "@/lib/auth";
 import {
   CASE_STATUSES,
-  STATUS_LABELS,
   type CaseStatus,
   normalizePhoneForDb,
 } from "@/lib/case-status";
+import { formatCaseContextSms, formatStatusChangeSms } from "@/lib/case-sms";
 import { sendSMS } from "@/lib/sms";
 import { createServiceClient } from "@/lib/supabase/server";
 
@@ -114,6 +114,32 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
         ? normalizePhoneForDb(String(body.family_contact_phone))
         : null;
     }
+    if (body.proceedings_summary !== undefined) {
+      updates.proceedings_summary = body.proceedings_summary;
+    }
+    if (body.last_ruling_summary !== undefined) {
+      updates.last_ruling_summary = body.last_ruling_summary;
+    }
+    if (body.sentence_outcome !== undefined) {
+      updates.sentence_outcome = body.sentence_outcome;
+    }
+    if (body.petition_guidance !== undefined) {
+      updates.petition_guidance = body.petition_guidance;
+    }
+    if (body.kenya_law_url !== undefined) {
+      updates.kenya_law_url = body.kenya_law_url;
+    }
+
+    const contextFields = [
+      "proceedings_summary",
+      "last_ruling_summary",
+      "sentence_outcome",
+      "petition_guidance",
+    ] as const;
+    const contextUpdated = contextFields.some(
+      (field) =>
+        body[field] !== undefined && body[field] !== existing[field],
+    );
 
     const { data, error } = await supabase
       .from("cases")
@@ -137,10 +163,10 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
         note: body.note ?? "Status updated via clerk dashboard",
       });
 
-      const statusLabel =
-        STATUS_LABELS[updates.current_status as CaseStatus] ??
-        String(updates.current_status);
-      const message = `HakiTrack: Case ${existing.case_number} status updated to ${statusLabel}.`;
+      const message = formatStatusChangeSms(
+        data,
+        updates.current_status as CaseStatus,
+      );
 
       const { data: subscribers } = await supabase
         .from("case_subscribers")
@@ -155,10 +181,31 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       }
 
       if (
-        existing.family_contact_phone &&
-        !notified.has(existing.family_contact_phone)
+        data.family_contact_phone &&
+        !notified.has(data.family_contact_phone)
       ) {
-        await sendSMS(existing.family_contact_phone, message);
+        await sendSMS(data.family_contact_phone, message);
+      }
+    } else if (contextUpdated) {
+      const message = formatCaseContextSms(data, "Case information updated.");
+
+      const { data: subscribers } = await supabase
+        .from("case_subscribers")
+        .select("phone_number")
+        .eq("case_id", id);
+
+      const notified = new Set<string>();
+
+      for (const subscriber of subscribers ?? []) {
+        notified.add(subscriber.phone_number);
+        await sendSMS(subscriber.phone_number, message);
+      }
+
+      if (
+        data.family_contact_phone &&
+        !notified.has(data.family_contact_phone)
+      ) {
+        await sendSMS(data.family_contact_phone, message);
       }
     }
 
