@@ -13,7 +13,7 @@ USSD case and bail status tracker for Kenya. Families dial in to check court dat
 
 - **USSD main menu:** case status, know your rights, legal aid directory
 - **Swahili-first** with English via `*9` at any step
-- USSD case lookup by case number (`*384*XYZ#`)
+- USSD case lookup by case number (`*789*977888#`)
 - SMS reminder opt-in from USSD (day before hearing)
 - SMS fallback for legal aid directory (other counties)
 - PIN-protected clerk dashboard
@@ -100,37 +100,40 @@ Karibu HakiTrack
 # Main menu
 curl -X POST http://localhost:3000/api/ussd \
   -H "Content-Type: application/json" \
-  -d '{"sessionId":"1","serviceCode":"*384*1#","phoneNumber":"+254711111111","text":""}'
+  -d '{"sessionId":"1","serviceCode":"*789*977888#","phoneNumber":"+254711111111","text":""}'
 
 # Case lookup (branch 1)
 curl -X POST http://localhost:3000/api/ussd \
   -H "Content-Type: application/json" \
-  -d '{"sessionId":"1","serviceCode":"*384*1#","phoneNumber":"+254711111111","text":"1*CR2026089"}'
+  -d '{"sessionId":"1","serviceCode":"*789*977888#","phoneNumber":"+254711111111","text":"1*CR2026089"}'
 
 # Rights menu (branch 2)
 curl -X POST http://localhost:3000/api/ussd \
   -H "Content-Type: application/json" \
-  -d '{"sessionId":"1","serviceCode":"*384*1#","phoneNumber":"+254711111111","text":"2*1"}'
+  -d '{"sessionId":"1","serviceCode":"*789*977888#","phoneNumber":"+254711111111","text":"2*1"}'
 
 # Legal aid — Nairobi + family (branch 3)
 curl -X POST http://localhost:3000/api/ussd \
   -H "Content-Type: application/json" \
-  -d '{"sessionId":"1","serviceCode":"*384*1#","phoneNumber":"+254711111111","text":"3*1*1"}'
+  -d '{"sessionId":"1","serviceCode":"*789*977888#","phoneNumber":"+254711111111","text":"3*1*1"}'
 ```
 
 ## Africa's Talking
 
-1. Create a sandbox account at [africastalking.com](https://africastalking.com)
-2. **USSD:** create a service code and set callback URL to `https://<your-domain>/api/ussd`
-3. **SMS:** register sender ID `HAKITRACK`
-4. Test locally with ngrok or deploy to Vercel first
+**Live USSD:** dial `*789*977888#` (username `hackitrack` on Africa's Talking)
+
+1. Create an account at [africastalking.com](https://africastalking.com)
+2. **USSD:** set callback URL to `https://hakitrack.vercel.app/api/ussd` (or your deployed domain)
+3. **Env:** set `AT_USERNAME=hackitrack` and your production `AT_API_KEY` in Vercel
+4. **SMS:** register sender ID `HAKITRACK` (use `AFRICASTK` in sandbox while testing)
+5. Confirm the shortcode mapping with your Africa's Talking contact if the code does not connect
 
 ### USSD test (JSON)
 
 ```bash
 curl -X POST http://localhost:3000/api/ussd \
   -H "Content-Type: application/json" \
-  -d '{"sessionId":"test","serviceCode":"*384*1#","phoneNumber":"+254711111111","text":""}'
+  -d '{"sessionId":"test","serviceCode":"*789*977888#","phoneNumber":"+254711111111","text":""}'
 ```
 
 ### SMS reminders (manual cron)
