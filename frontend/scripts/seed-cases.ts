@@ -11,6 +11,13 @@ import { createClient } from "@supabase/supabase-js";
 import { config } from "dotenv";
 import { resolve } from "path";
 
+const DEMO_FAMILY = {
+  name: "Jane Kamau",
+  email: "family@demo.hakitrack.test",
+  phone: "254711111111",
+  caseNumber: "CR-2026-089",
+};
+
 config({ path: resolve(process.cwd(), ".env.local") });
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -153,6 +160,53 @@ async function main() {
     });
 
     console.log(`Seeded ${data.case_number}`);
+  }
+
+  const { data: demoCase } = await supabase
+    .from("cases")
+    .select("id")
+    .eq("case_number", DEMO_FAMILY.caseNumber)
+    .maybeSingle();
+
+  const { data: familyMember, error: familyError } = await supabase
+    .from("family_members")
+    .upsert(
+      {
+        full_name: DEMO_FAMILY.name,
+        email: DEMO_FAMILY.email,
+        phone_number: DEMO_FAMILY.phone,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "email" },
+    )
+    .select("email")
+    .single();
+
+  if (familyError) {
+    console.warn(
+      "Could not seed demo family member (run migration 004):",
+      familyError.message,
+    );
+  } else {
+    console.log(`Seeded family member ${familyMember.email}`);
+  }
+
+  if (demoCase) {
+    const { error: subError } = await supabase.from("case_subscribers").upsert(
+      {
+        case_id: demoCase.id,
+        phone_number: DEMO_FAMILY.phone,
+      },
+      { onConflict: "case_id,phone_number" },
+    );
+
+    if (subError) {
+      console.warn("Could not link demo phone to case:", subError.message);
+    } else {
+      console.log(
+        `Linked ${DEMO_FAMILY.phone} to ${DEMO_FAMILY.caseNumber} for SMS`,
+      );
+    }
   }
 
   console.log("Done.");
