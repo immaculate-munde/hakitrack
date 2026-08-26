@@ -85,7 +85,51 @@ body {
 }
 
 .site-header-rule {
-  border-top: 1px dotted rgba(0, 0, 0, 0.2);
+  border-top: 1px dotted var(--site-dotted);
+}
+
+.site-header {
+  background: var(--site-header);
+  color: var(--site-header-fg);
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.3s ease;
+}
+
+.site-header-scrolled {
+  background: var(--site-header-scrolled);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 1px 0 var(--site-border);
+}
+
+.site-header-menu-open {
+  background: var(--site-header);
+}
+
+.site-header-spacer {
+  height: var(--site-header-height);
+  flex-shrink: 0;
+}
+
+.site-mobile-nav {
+  max-height: 0;
+  transition: max-height 0.3s ease;
+}
+
+.site-mobile-nav-open {
+  max-height: min(80vh, 28rem);
+}
+
+.site-ghost-btn-header {
+  border-color: color-mix(in srgb, var(--site-header-fg) 70%, transparent);
+  color: var(--site-header-fg);
+}
+
+.site-ghost-btn-header:hover {
+  background: var(--site-header-fg);
+  color: var(--site-header);
 }
 
 .site-mono-label {
