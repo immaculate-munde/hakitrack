@@ -3,7 +3,6 @@ import { handleCaseBranch } from "@/lib/ussd/case-branch";
 import { formatGoodbye, formatWelcome, ussdResponse } from "@/lib/ussd/formatters";
 import { handleLegalAidBranch } from "@/lib/ussd/legalaid-content";
 import { handleRightsBranch } from "@/lib/ussd/rights-content";
-import { Langar } from "next/font/google";
 
 export type UssdInput = {
   sessionId: string;
