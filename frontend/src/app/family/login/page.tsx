@@ -2,7 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { DemoAccountCard } from "@/components/auth/DemoAccountCard";
 import { SiteShell } from "@/components/layout/SiteShell";
+import { DEMO_FAMILY } from "@/lib/demo-accounts";
 
 export default function FamilyLoginPage() {
   const router = useRouter();
@@ -106,10 +108,20 @@ export default function FamilyLoginPage() {
             </button>
           </form>
 
-          <p className="mt-6 text-xs leading-5 text-site-on-dark-muted">
-            Demo: use phone <strong>254711111111</strong> with case{" "}
-            <strong>CR-2026-089</strong> after the clerk links your number.
-          </p>
+          <DemoAccountCard
+            title="Demo Family"
+            rows={[
+              { label: "Name", value: DEMO_FAMILY.name },
+              { label: "Email", value: DEMO_FAMILY.email },
+              { label: "Phone", value: DEMO_FAMILY.phone },
+              { label: "Case to track", value: DEMO_FAMILY.caseNumber },
+            ]}
+            onUseDemo={() => {
+              setName(DEMO_FAMILY.name);
+              setEmail(DEMO_FAMILY.email);
+              setPhone(DEMO_FAMILY.phone);
+            }}
+          />
         </div>
       </div>
     </SiteShell>
