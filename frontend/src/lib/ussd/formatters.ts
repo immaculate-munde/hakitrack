@@ -13,9 +13,12 @@ export function ussdResponse(
   type: "CON" | "END",
   message: string,
   lang: Lang = "sw",
+  options?: { showNav?: boolean },
 ): Response {
   const body =
-    type === "CON" ? withLangFooter(message, lang, "CON") : message.slice(0, 182);
+    type === "CON"
+      ? withLangFooter(message, lang, "CON", options?.showNav ?? true)
+      : message.slice(0, 182);
   return new Response(`${type} ${body}`, {
     headers: { "Content-Type": "text/plain" },
   });

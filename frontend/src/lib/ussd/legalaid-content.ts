@@ -66,6 +66,15 @@ export async function handleLegalAidBranch(
   lang: Lang,
   phoneNumber: string,
 ): Promise<Response> {
+  const exitText =
+    lang === "sw"
+      ? "Asante kwa kutumia HakiTrack."
+      : "Thank you for using HakiTrack.";
+
+  if (steps.length >= 2 && steps[steps.length - 1] === "0") {
+    return ussdResponse("END", exitText, lang);
+  }
+
   if (steps.length === 0) {
     return ussdResponse("CON", LEGAL_AID_MENU.root[lang], lang);
   }
@@ -73,21 +82,29 @@ export async function handleLegalAidBranch(
   const rootChoice = steps[0];
 
   if (rootChoice === "0") {
-    const text =
-      lang === "sw"
-        ? "Asante kwa kutumia HakiTrack."
-        : "Thank you for using HakiTrack.";
-    return ussdResponse("END", text, lang);
+    return ussdResponse("END", exitText, lang);
   }
 
   if (rootChoice === "1") {
-    await sendSMS(phoneNumber, SMS_BODY.about[lang]);
-    return ussdResponse("END", LEGAL_AID_MENU.about[lang], lang);
+    if (steps.length === 1) {
+      await sendSMS(phoneNumber, SMS_BODY.about[lang]);
+    }
+    return ussdResponse(
+      "CON",
+      `${LEGAL_AID_MENU.about[lang]}\n${lang === "sw" ? "0=Toka" : "0=Exit"}`,
+      lang,
+    );
   }
 
   if (rootChoice === "2") {
-    await sendSMS(phoneNumber, SMS_BODY.qualify[lang]);
-    return ussdResponse("END", LEGAL_AID_MENU.qualify[lang], lang);
+    if (steps.length === 1) {
+      await sendSMS(phoneNumber, SMS_BODY.qualify[lang]);
+    }
+    return ussdResponse(
+      "CON",
+      `${LEGAL_AID_MENU.qualify[lang]}\n${lang === "sw" ? "0=Toka" : "0=Exit"}`,
+      lang,
+    );
   }
 
   if (rootChoice !== "3") {
@@ -95,7 +112,7 @@ export async function handleLegalAidBranch(
       lang === "sw"
         ? "Chaguo si sahihi. Tafadhali jaribu tena."
         : "Invalid choice. Please try again.";
-    return ussdResponse("END", invalidText, lang);
+    return ussdResponse("CON", `${invalidText}\n\n${LEGAL_AID_MENU.root[lang]}`, lang);
   }
 
   return handleProviderLookup(steps.slice(1), lang, phoneNumber);
@@ -106,6 +123,16 @@ async function handleProviderLookup(
   lang: Lang,
   phoneNumber: string,
 ): Promise<Response> {
+  const exitHint = lang === "sw" ? "0=Toka" : "0=Exit";
+
+  if (steps.length >= 2 && steps[steps.length - 1] === "0") {
+    const exitText =
+      lang === "sw"
+        ? "Asante kwa kutumia HakiTrack."
+        : "Thank you for using HakiTrack.";
+    return ussdResponse("END", exitText, lang);
+  }
+
   if (steps.length === 0) {
     return ussdResponse("CON", LEGAL_AID_MENU.county[lang], lang);
   }
@@ -113,12 +140,14 @@ async function handleProviderLookup(
   const countyChoice = steps[0];
 
   if (countyChoice === "0") {
-    await sendLegalAidSMS(phoneNumber, "All Counties", lang);
+    if (steps.length === 1) {
+      await sendLegalAidSMS(phoneNumber, "All Counties", lang);
+    }
     const smsSentText =
       lang === "sw"
-        ? "Tumekutumia SMS yenye orodha ya msaada wa kisheria na viungo. Asante."
-        : "We sent an SMS with legal aid providers and links. Thank you.";
-    return ussdResponse("END", smsSentText, lang);
+        ? "Tumekutumia SMS yenye orodha ya msaada wa kisheria na viungo."
+        : "We sent an SMS with legal aid providers and links.";
+    return ussdResponse("CON", `${smsSentText}\n${exitHint}`, lang);
   }
 
   const county = COUNTIES[countyChoice];
@@ -127,7 +156,11 @@ async function handleProviderLookup(
       lang === "sw"
         ? "Chaguo si sahihi. Tafadhali jaribu tena."
         : "Invalid choice. Please try again.";
-    return ussdResponse("END", invalidText, lang);
+    return ussdResponse(
+      "CON",
+      `${invalidText}\n\n${LEGAL_AID_MENU.county[lang]}`,
+      lang,
+    );
   }
 
   if (steps.length === 1) {
@@ -138,7 +171,9 @@ async function handleProviderLookup(
   const caseCategory = CASE_TYPES[caseTypeChoice] ?? "all";
   const providers = await getProviders(county, caseCategory);
 
-  await sendLegalAidSMS(phoneNumber, county, lang, providers, caseCategory);
+  if (steps.length === 2) {
+    await sendLegalAidSMS(phoneNumber, county, lang, providers, caseCategory);
+  }
 
   const header =
     lang === "sw"
@@ -154,9 +189,9 @@ async function handleProviderLookup(
       ? "Orodha kamili na viungo vimetumwa kwa SMS."
       : "Full list and links sent via SMS.";
 
-  const body = [header, ...providerLines, footer].join("\n").slice(0, 182);
+  const body = [header, ...providerLines, footer, exitHint].join("\n").slice(0, 160);
 
-  return ussdResponse("END", body, lang);
+  return ussdResponse("CON", body, lang);
 }
 
 async function getProviders(county: string, caseCategory: string) {

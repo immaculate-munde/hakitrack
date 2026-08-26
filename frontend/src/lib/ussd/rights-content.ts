@@ -69,6 +69,10 @@ export async function handleRightsBranch(
   lang: Lang,
   phoneNumber: string,
 ): Promise<Response> {
+  if (steps.length >= 2 && steps[steps.length - 1] === "0") {
+    return ussdResponse("END", SYSTEM_MESSAGES.exit[lang], lang);
+  }
+
   if (steps.length === 0) {
     return ussdResponse("CON", RIGHTS_MENU.root[lang], lang);
   }
@@ -88,11 +92,17 @@ export async function handleRightsBranch(
 
   const key = keyMap[choice];
   if (!key || key === "root") {
-    return ussdResponse("END", SYSTEM_MESSAGES.invalidChoice[lang], lang);
+    return ussdResponse("CON", `${SYSTEM_MESSAGES.invalidChoice[lang]}\n\n${RIGHTS_MENU.root[lang]}`, lang);
   }
 
-  const smsKey = key as RightsTopic | "bail";
-  await sendSMS(phoneNumber, SMS_BODY[smsKey][lang]);
+  if (steps.length === 1) {
+    const smsKey = key as RightsTopic | "bail";
+    await sendSMS(phoneNumber, SMS_BODY[smsKey][lang]);
+  }
 
-  return ussdResponse("END", RIGHTS_MENU[key][lang], lang);
+  return ussdResponse(
+    "CON",
+    `${RIGHTS_MENU[key][lang]}\n${lang === "sw" ? "0=Toka" : "0=Exit"}`,
+    lang,
+  );
 }

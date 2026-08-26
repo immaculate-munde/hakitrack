@@ -19,6 +19,20 @@ export async function handleCaseBranch(
   lang: Lang,
   phoneNumber: string,
 ): Promise<Response> {
+  const exitHint = lang === "sw" ? "0=Toka" : "0=Exit";
+
+  if (steps.length >= 3 && steps[steps.length - 1] === "0") {
+    return ussdResponse("END", formatGoodbye(lang), lang);
+  }
+
+  if (steps.length === 3 && steps[1] === "1") {
+    return ussdResponse(
+      "CON",
+      `${USSD_COPY.subscribeSuccess[lang]}\n${exitHint}`,
+      lang,
+    );
+  }
+
   if (steps.length === 0) {
     return ussdResponse("CON", USSD_COPY.casePrompt[lang], lang);
   }
@@ -93,7 +107,11 @@ async function handleSubscribe(
   }
 
   if (!caseRecord.next_hearing_date) {
-    return ussdResponse("END", USSD_COPY.noHearing[lang], lang);
+    return ussdResponse(
+      "CON",
+      `${USSD_COPY.noHearing[lang]}\n${lang === "sw" ? "0=Toka" : "0=Exit"}`,
+      lang,
+    );
   }
 
   const { error } = await supabase.from("case_subscribers").upsert(
@@ -106,7 +124,11 @@ async function handleSubscribe(
 
   if (error) {
     console.error("[USSD] Subscribe error:", error);
-    return ussdResponse("END", USSD_COPY.subscribeFailed[lang], lang);
+    return ussdResponse(
+      "CON",
+      `${USSD_COPY.subscribeFailed[lang]}\n${lang === "sw" ? "0=Toka" : "0=Exit"}`,
+      lang,
+    );
   }
 
   const smsMessage = formatSubscribeConfirmSms(
@@ -118,5 +140,9 @@ async function handleSubscribe(
   );
   await sendSMS(phoneNumber, smsMessage);
 
-  return ussdResponse("END", USSD_COPY.subscribeSuccess[lang], lang);
+  return ussdResponse(
+    "CON",
+    `${USSD_COPY.subscribeSuccess[lang]}\n${lang === "sw" ? "0=Toka" : "0=Exit"}`,
+    lang,
+  );
 }

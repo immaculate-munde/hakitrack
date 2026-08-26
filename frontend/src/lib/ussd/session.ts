@@ -2,7 +2,9 @@
 import { handleCaseBranch } from "@/lib/ussd/case-branch";
 import { formatGoodbye, formatWelcome, ussdResponse } from "@/lib/ussd/formatters";
 import { handleLegalAidBranch } from "@/lib/ussd/legalaid-content";
+import { applyNavigation } from "@/lib/ussd/navigation";
 import { handleRightsBranch } from "@/lib/ussd/rights-content";
+import { parseSession, type Branch } from "@/lib/ussd/language";
 
 export type UssdInput = {
   sessionId: string;
@@ -11,40 +13,23 @@ export type UssdInput = {
   text: string;
 };
 
-export type Branch = "case" | "rights" | "legalaid" | "root";
+export type { Branch };
 
-export function parseSession(text: string): { branch: Branch; steps: string[]; lang: "sw" | "en" } {
-  let rawParts = (text ?? "").split("*").filter((p) => p.trim().length > 0);
-  let lang: "sw" | "en" = "sw";
-
-  if (rawParts.includes("9")) {
-    lang = "en";
-    rawParts = rawParts.filter((p) => p !== "9");
-  }
-
-  if (rawParts.length === 0) {
-    return { branch: "root", steps: [], lang };
-  }
-
-  const rootChoice = rawParts[0];
-  const steps = rawParts.slice(1);
-
-  switch (rootChoice) {
-    case "1":
-      return { branch: "case", steps, lang };
-    case "2":
-      return { branch: "rights", steps, lang };
-    case "3":
-      return { branch: "legalaid", steps, lang };
-    case "0":
-      return { branch: "root", steps: ["0"], lang };
-    default:
-      return { branch: "root", steps: [], lang };
-  }
-}
+export { parseSession };
 
 export async function handleUssdSession(input: UssdInput): Promise<Response> {
-  const { branch, steps, lang } = parseSession(input.text ?? "");
+  const parsed = parseSession(input.text ?? "");
+  const nav = applyNavigation(parsed.branch, parsed.steps);
+
+  if (nav.type === "main_menu") {
+    return ussdResponse("CON", formatWelcome(parsed.lang), parsed.lang, {
+      showNav: false,
+    });
+  }
+
+  const branch = nav.branch;
+  const steps = nav.steps;
+  const lang = parsed.lang;
 
   switch (branch) {
     case "case":
@@ -58,6 +43,6 @@ export async function handleUssdSession(input: UssdInput): Promise<Response> {
       if (steps[0] === "0") {
         return ussdResponse("END", formatGoodbye(lang), lang);
       }
-      return ussdResponse("CON", formatWelcome(lang),lang);
+      return ussdResponse("CON", formatWelcome(lang), lang, { showNav: false });
   }
 }

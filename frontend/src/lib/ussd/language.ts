@@ -1,3 +1,5 @@
+import { NAV_HINT } from "@/lib/ussd/navigation";
+
 export type Lang = "sw" | "en";
 
 export type Branch = "case" | "rights" | "legalaid" | "root";
@@ -43,8 +45,17 @@ export function parseSession(text: string): {
   }
 }
 
-export function withLangFooter(message: string, lang: Lang, type: "CON" | "END"): string {
-  if (type === "END") return message;
-  const combined = `${message}\n${LANG_FOOTER[lang]}`;
-  return combined.slice(0, 182);
+export function withLangFooter(
+  message: string,
+  lang: Lang,
+  type: "CON" | "END",
+  showNav = true,
+): string {
+  if (type === "END") return message.slice(0, 182);
+  const parts = [message];
+  if (showNav) {
+    parts.push(NAV_HINT[lang]);
+  }
+  parts.push(LANG_FOOTER[lang]);
+  return parts.join("\n").slice(0, 182);
 }
