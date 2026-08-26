@@ -52,6 +52,11 @@ export function normalizeCaseNumber(input: string): string {
   return input.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
 }
 
+/** Minimum length for a real case reference (avoids treating menu key "1" as a case). */
+export function isValidCaseNumberInput(input: string): boolean {
+  return normalizeCaseNumber(input).length >= 4;
+}
+
 export function normalizePhone(phone: string): string {
   let formatted = String(phone).replace(/\D/g, "");
   if (formatted.startsWith("0")) {

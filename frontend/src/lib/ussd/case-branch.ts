@@ -1,4 +1,5 @@
 import {
+  isValidCaseNumberInput,
   normalizeCaseNumber,
   normalizePhoneForDb,
   type CaseRecord,
@@ -45,11 +46,10 @@ export async function handleCaseBranch(
     return ussdResponse("CON", USSD_COPY.subscribeSuccess[lang], lang);
   }
 
-  const subscribeRequested =
-    steps.length > 0 && steps[steps.length - 1] === "1";
+  const subscribeRequested = isSubscribeRequest(steps);
   const kycSteps = subscribeRequested ? steps.slice(0, -1) : steps;
 
-  if (kycSteps.length === 0) {
+  if (kycSteps.length === 0 || !isValidCaseNumberInput(kycSteps[0] ?? "")) {
     return ussdResponse("CON", USSD_COPY.casePrompt[lang], lang);
   }
 
@@ -239,6 +239,16 @@ function getDefendantAnswer(kycSteps: string[]): string {
   }
 
   return kycSteps[kycSteps.length - 1]?.trim() ?? "";
+}
+
+/** SMS subscribe — only after a valid case number, not when "1" is the case input. */
+function isSubscribeRequest(steps: string[]): boolean {
+  if (steps.length < 2 || steps[steps.length - 1] !== "1") {
+    return false;
+  }
+
+  const caseInput = steps[0] ?? "";
+  return isValidCaseNumberInput(caseInput);
 }
 
 async function handleSubscribe(

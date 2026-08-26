@@ -29,7 +29,7 @@ export function parseSession(text: string): {
 
   const parts = cleanText.split("*");
   const rootChoice = parts[0];
-  const steps = parts.slice(1);
+  const steps = parts.slice(1).filter((part) => part.length > 0);
 
   switch (rootChoice) {
     case "1":
