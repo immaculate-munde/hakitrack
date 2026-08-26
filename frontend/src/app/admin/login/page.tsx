@@ -2,8 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { ClerkDemoCard } from "@/components/auth/DemoAccountCard";
 import { SiteShell } from "@/components/layout/SiteShell";
-import { Input } from "@/components/ui/Input";
+import { DEMO_CLERK } from "@/lib/demo-accounts";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -73,6 +74,8 @@ export default function AdminLoginPage() {
               {loading ? "Signing in..." : "Sign In"}
             </button>
           </form>
+
+          <ClerkDemoCard onUseDemo={() => setPin(DEMO_CLERK.pin)} />
         </div>
       </div>
     </SiteShell>
