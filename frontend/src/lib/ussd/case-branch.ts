@@ -7,7 +7,6 @@ import { sendSMS } from "@/lib/sms";
 import { createServiceClient } from "@/lib/supabase/server";
 import {
   formatCaseStatus,
-  formatGoodbye,
   formatSubscribeConfirmSms,
   ussdResponse,
   USSD_COPY,
@@ -19,18 +18,8 @@ export async function handleCaseBranch(
   lang: Lang,
   phoneNumber: string,
 ): Promise<Response> {
-  const exitHint = lang === "sw" ? "0=Toka" : "0=Exit";
-
-  if (steps.length >= 3 && steps[steps.length - 1] === "0") {
-    return ussdResponse("END", formatGoodbye(lang), lang);
-  }
-
   if (steps.length === 3 && steps[1] === "1") {
-    return ussdResponse(
-      "CON",
-      `${USSD_COPY.subscribeSuccess[lang]}\n${exitHint}`,
-      lang,
-    );
+    return ussdResponse("CON", USSD_COPY.subscribeSuccess[lang], lang);
   }
 
   if (steps.length === 0) {
@@ -38,24 +27,18 @@ export async function handleCaseBranch(
   }
 
   if (steps.length === 1) {
-    if (steps[0] === "0") {
-      return ussdResponse("END", formatGoodbye(lang), lang);
-    }
     return handleCaseLookup(steps[0], lang);
   }
 
   if (steps.length === 2) {
     const [rawCaseNumber, action] = steps;
-    if (action === "0") {
-      return ussdResponse("END", formatGoodbye(lang), lang);
-    }
     if (action === "1") {
       return handleSubscribe(rawCaseNumber, phoneNumber, lang);
     }
-    return ussdResponse("END", formatGoodbye(lang), lang);
+    return ussdResponse("CON", USSD_COPY.caseNotFound[lang], lang);
   }
 
-  return ussdResponse("END", formatGoodbye(lang), lang);
+  return ussdResponse("CON", USSD_COPY.casePrompt[lang], lang);
 }
 
 async function handleCaseLookup(
@@ -107,11 +90,7 @@ async function handleSubscribe(
   }
 
   if (!caseRecord.next_hearing_date) {
-    return ussdResponse(
-      "CON",
-      `${USSD_COPY.noHearing[lang]}\n${lang === "sw" ? "0=Toka" : "0=Exit"}`,
-      lang,
-    );
+    return ussdResponse("CON", USSD_COPY.noHearing[lang], lang);
   }
 
   const { error } = await supabase.from("case_subscribers").upsert(
@@ -124,11 +103,7 @@ async function handleSubscribe(
 
   if (error) {
     console.error("[USSD] Subscribe error:", error);
-    return ussdResponse(
-      "CON",
-      `${USSD_COPY.subscribeFailed[lang]}\n${lang === "sw" ? "0=Toka" : "0=Exit"}`,
-      lang,
-    );
+    return ussdResponse("CON", USSD_COPY.subscribeFailed[lang], lang);
   }
 
   const smsMessage = formatSubscribeConfirmSms(
@@ -140,9 +115,5 @@ async function handleSubscribe(
   );
   await sendSMS(phoneNumber, smsMessage);
 
-  return ussdResponse(
-    "CON",
-    `${USSD_COPY.subscribeSuccess[lang]}\n${lang === "sw" ? "0=Toka" : "0=Exit"}`,
-    lang,
-  );
+  return ussdResponse("CON", USSD_COPY.subscribeSuccess[lang], lang);
 }

@@ -13,8 +13,8 @@ type RightsTopic = "arrested" | "courtCase" | "general";
 
 export const RIGHTS_MENU = {
   root: {
-    sw: "Jua Haki Zako:\n1. Ukikamatwa\n2. Kesi mahakamani\n3. Dhamana na haki\n4. Haki za jumla\n0. Toka",
-    en: "Know Your Rights:\n1. If arrested\n2. In court\n3. Bail & bond\n4. General rights\n0. Exit",
+    sw: "Jua Haki Zako:\n1. Ukikamatwa\n2. Kesi mahakamani\n3. Dhamana na haki\n4. Haki za jumla",
+    en: "Know Your Rights:\n1. If arrested\n2. In court\n3. Bail & bond\n4. General rights",
   },
   arrested: {
     sw: "Ukikamatwa (Ibara 49):\n- Sababu ya kukamatwa\n- Kunyamaza\n- Mawasiliano na familia/wakili\n- Mahakamani ndani ya masaa 24\n- Dhamana nafuu\nSMS yenye viungo imetumwa.",
@@ -35,10 +35,6 @@ export const RIGHTS_MENU = {
 } as const;
 
 export const SYSTEM_MESSAGES = {
-  exit: {
-    en: "Thank you for using HakiTrack.",
-    sw: "Asante kwa kutumia HakiTrack.",
-  },
   invalidChoice: {
     en: "Invalid choice. Please try again.",
     sw: "Chaguo si sahihi. Tafadhali jaribu tena.",
@@ -69,19 +65,11 @@ export async function handleRightsBranch(
   lang: Lang,
   phoneNumber: string,
 ): Promise<Response> {
-  if (steps.length >= 2 && steps[steps.length - 1] === "0") {
-    return ussdResponse("END", SYSTEM_MESSAGES.exit[lang], lang);
-  }
-
   if (steps.length === 0) {
     return ussdResponse("CON", RIGHTS_MENU.root[lang], lang);
   }
 
   const choice = steps[0];
-
-  if (choice === "0") {
-    return ussdResponse("END", SYSTEM_MESSAGES.exit[lang], lang);
-  }
 
   const keyMap: Record<string, keyof typeof RIGHTS_MENU> = {
     "1": "arrested",
@@ -92,7 +80,11 @@ export async function handleRightsBranch(
 
   const key = keyMap[choice];
   if (!key || key === "root") {
-    return ussdResponse("CON", `${SYSTEM_MESSAGES.invalidChoice[lang]}\n\n${RIGHTS_MENU.root[lang]}`, lang);
+    return ussdResponse(
+      "CON",
+      `${SYSTEM_MESSAGES.invalidChoice[lang]}\n\n${RIGHTS_MENU.root[lang]}`,
+      lang,
+    );
   }
 
   if (steps.length === 1) {
@@ -100,9 +92,5 @@ export async function handleRightsBranch(
     await sendSMS(phoneNumber, SMS_BODY[smsKey][lang]);
   }
 
-  return ussdResponse(
-    "CON",
-    `${RIGHTS_MENU[key][lang]}\n${lang === "sw" ? "0=Toka" : "0=Exit"}`,
-    lang,
-  );
+  return ussdResponse("CON", RIGHTS_MENU[key][lang], lang);
 }

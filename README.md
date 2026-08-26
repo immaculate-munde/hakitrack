@@ -11,7 +11,7 @@ USSD case and bail status tracker for Kenya. Families dial in to check court dat
 
 ## Features
 
-- **USSD main menu:** case status, know your rights, legal aid directory
+- **USSD main menu:** case status, know your rights, legal aid, helplines (`*789*977888#`)
 - **Swahili-first** with English via `*9` at any step
 - USSD case lookup by case number (`*789*977888#`)
 - SMS reminder opt-in from USSD (day before hearing)
@@ -79,20 +79,25 @@ npm run seed:legal-aid
 
 Verify legal aid helpline numbers against each organization's official site before production.
 
-## USSD menu (v2)
+## USSD menu
+
+Dial **`*789*977888#`** from any Kenyan mobile line.
 
 ```
 Karibu HakiTrack
 1. Angalia kesi (Case status)
 2. Haki zako (Know your rights)
-3. Msaada wa kisheria (Find legal aid)
+3. Msaada wa kisheria (Legal aid)
+4. Simu za msaada (Helplines)
 0. Toka (Exit)
+0=Rudi  00=Menyu
 (Kiingereza: *9)
 ```
 
-- **Branch 1:** existing case lookup + SMS subscribe
-- **Branch 2:** static constitutional rights (Article 49)
-- **Branch 3:** county → case type → providers (SMS fallback for "Other")
+- **Branch 1:** case lookup + SMS subscribe
+- **Branch 2:** constitutional rights + SMS links
+- **Branch 3:** legal aid by county + SMS fallback
+- **Branch 4:** toll-free helplines + SMS list
 
 ### USSD test examples
 
@@ -125,8 +130,33 @@ curl -X POST http://localhost:3000/api/ussd \
 1. Create an account at [africastalking.com](https://africastalking.com)
 2. **USSD:** set callback URL to `https://hakitrack.vercel.app/api/ussd` (or your deployed domain)
 3. **Env:** set `AT_USERNAME=hackitrack` and your production `AT_API_KEY` in Vercel
-4. **SMS:** register sender ID `HAKITRACK` (use `AFRICASTK` in sandbox while testing)
+4. **SMS:** see [SMS setup](#sms-setup) below
 5. Confirm the shortcode mapping with your Africa's Talking contact if the code does not connect
+
+### SMS setup
+
+SMS uses the same **hackitrack** app credentials as above (not sandbox).
+
+**Vercel env vars:**
+```env
+AT_USERNAME=hackitrack
+AT_API_KEY=<production key from hackitrack app → Settings → API Key>
+AT_SENDER_ID=HAKITRACK
+```
+
+If **HAKITRACK** is not yet listed under **SMS → Alphanumerics → My Alphanumerics**, either:
+- Apply for **HAKITRACK** and wait for approval (1–3 days), or
+- Leave `AT_SENDER_ID` empty so Africa's Talking uses your account default shortcode
+
+**Test SMS:**
+1. Dial `*789*977888#` → option **1** → enter `CR2026089` → press **1** to subscribe
+2. Or log in as clerk → update a case status (subscribers get SMS)
+3. Check **Vercel → Logs** for `[HakiTrack SMS]` messages if nothing arrives
+
+**Requirements:**
+- Wallet balance on hackitrack app (top up under Billing)
+- Production API key (not sandbox key)
+- Recipient phone in format `2547XXXXXXXX`
 
 ### USSD test (JSON)
 

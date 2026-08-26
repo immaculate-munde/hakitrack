@@ -20,6 +20,16 @@ export { parseSession };
 
 export async function handleUssdSession(input: UssdInput): Promise<Response> {
   const parsed = parseSession(input.text ?? "");
+
+  // Exit only from the main menu (user dials 0 with no prior branch).
+  if (
+    parsed.branch === "root" &&
+    parsed.steps.length === 1 &&
+    parsed.steps[0] === "0"
+  ) {
+    return ussdResponse("END", formatGoodbye(parsed.lang), parsed.lang);
+  }
+
   const nav = applyNavigation(parsed.branch, parsed.steps);
 
   if (nav.type === "main_menu") {
@@ -43,9 +53,6 @@ export async function handleUssdSession(input: UssdInput): Promise<Response> {
       return handleHelplinesBranch(steps, lang, input.phoneNumber);
     case "root":
     default:
-      if (steps[0] === "0") {
-        return ussdResponse("END", formatGoodbye(lang), lang);
-      }
       return ussdResponse("CON", formatWelcome(lang), lang, { showNav: false });
   }
 }

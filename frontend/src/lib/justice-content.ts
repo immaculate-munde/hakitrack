@@ -1,5 +1,6 @@
 import { HELPLINES } from "@/lib/helplines";
 import { RESOURCE_LINKS } from "@/lib/ussd/resource-links";
+import { USSD_DIAL_CODE } from "@/lib/ussd/config";
 
 export type GuideSection = {
   id: string;
@@ -121,7 +122,7 @@ export const LEGAL_AID_SECTIONS: GuideSection[] = [
     id: "find-help",
     title: "Find help near you",
     summary:
-      "Dial HakiTrack USSD option 3 to search providers by county and case type, or call these toll-free numbers.",
+      `Dial ${USSD_DIAL_CODE} option 3 to search providers by county and case type, or call these toll-free numbers.`,
     points: [
       "Nairobi, Mombasa, Kisumu, and Nakuru providers are listed in our USSD directory.",
       "For other counties, USSD sends a full provider list by SMS.",
@@ -149,7 +150,7 @@ export const SMS_ALERT_SECTIONS: GuideSection[] = [
     title: "Subscribe via USSD",
     summary: "Use any phone to opt in after checking a case.",
     points: [
-      "Dial the HakiTrack USSD code and choose option 1 (Case status).",
+      `Dial ${USSD_DIAL_CODE} and choose option 1 (Case status).`,
       "Enter the case number (e.g. CR2026089).",
       "Review the status, then press 1 to subscribe to SMS reminders.",
       "A confirmation SMS is sent immediately with case details.",

@@ -29,8 +29,8 @@ const FALLBACK_PROVIDERS = [
 
 export const LEGAL_AID_MENU = {
   root: {
-    sw: "Msaada wa Kisheria:\n1. Msaada wa kisheria ni nini?\n2. Nani anastahili?\n3. Tafuta msaada karibu\n0. Toka",
-    en: "Legal Aid:\n1. What is legal aid?\n2. Who qualifies?\n3. Find help near you\n0. Exit",
+    sw: "Msaada wa Kisheria:\n1. Msaada wa kisheria ni nini?\n2. Nani anastahili?\n3. Tafuta msaada karibu",
+    en: "Legal Aid:\n1. What is legal aid?\n2. Who qualifies?\n3. Find help near you",
   },
   about: {
     sw: "Msaada wa kisheria:\n- Msaada bure/kwa gharama nafuu\n- Kwa wasiojiweza kulipa wakili\n- NLAS na mashirika kama Kituo\n- Simu za bure zinapatikana\nSMS yenye viungo imetumwa.",
@@ -41,8 +41,8 @@ export const LEGAL_AID_MENU = {
     en: "You may qualify if:\n- You cannot afford a lawyer\n- Family, land, or criminal matter\n- You are vulnerable or at risk\n- Under the Legal Aid Act 2016\nLinks sent via SMS.",
   },
   county: {
-    sw: "Chagua kaunti:\n1. Nairobi  2. Mombasa\n3. Kisumu  4. Nakuru\n0. Nyingine (SMS orodha)",
-    en: "Select county:\n1. Nairobi  2. Mombasa\n3. Kisumu  4. Nakuru\n0. Other (SMS list)",
+    sw: "Chagua kaunti:\n1. Nairobi  2. Mombasa\n3. Kisumu  4. Nakuru\n5. Nyingine (SMS orodha)",
+    en: "Select county:\n1. Nairobi  2. Mombasa\n3. Kisumu  4. Nakuru\n5. Other (SMS list)",
   },
   caseType: (county: string, lang: Lang) =>
     lang === "sw"
@@ -66,45 +66,24 @@ export async function handleLegalAidBranch(
   lang: Lang,
   phoneNumber: string,
 ): Promise<Response> {
-  const exitText =
-    lang === "sw"
-      ? "Asante kwa kutumia HakiTrack."
-      : "Thank you for using HakiTrack.";
-
-  if (steps.length >= 2 && steps[steps.length - 1] === "0") {
-    return ussdResponse("END", exitText, lang);
-  }
-
   if (steps.length === 0) {
     return ussdResponse("CON", LEGAL_AID_MENU.root[lang], lang);
   }
 
   const rootChoice = steps[0];
 
-  if (rootChoice === "0") {
-    return ussdResponse("END", exitText, lang);
-  }
-
   if (rootChoice === "1") {
     if (steps.length === 1) {
       await sendSMS(phoneNumber, SMS_BODY.about[lang]);
     }
-    return ussdResponse(
-      "CON",
-      `${LEGAL_AID_MENU.about[lang]}\n${lang === "sw" ? "0=Toka" : "0=Exit"}`,
-      lang,
-    );
+    return ussdResponse("CON", LEGAL_AID_MENU.about[lang], lang);
   }
 
   if (rootChoice === "2") {
     if (steps.length === 1) {
       await sendSMS(phoneNumber, SMS_BODY.qualify[lang]);
     }
-    return ussdResponse(
-      "CON",
-      `${LEGAL_AID_MENU.qualify[lang]}\n${lang === "sw" ? "0=Toka" : "0=Exit"}`,
-      lang,
-    );
+    return ussdResponse("CON", LEGAL_AID_MENU.qualify[lang], lang);
   }
 
   if (rootChoice !== "3") {
@@ -123,23 +102,13 @@ async function handleProviderLookup(
   lang: Lang,
   phoneNumber: string,
 ): Promise<Response> {
-  const exitHint = lang === "sw" ? "0=Toka" : "0=Exit";
-
-  if (steps.length >= 2 && steps[steps.length - 1] === "0") {
-    const exitText =
-      lang === "sw"
-        ? "Asante kwa kutumia HakiTrack."
-        : "Thank you for using HakiTrack.";
-    return ussdResponse("END", exitText, lang);
-  }
-
   if (steps.length === 0) {
     return ussdResponse("CON", LEGAL_AID_MENU.county[lang], lang);
   }
 
   const countyChoice = steps[0];
 
-  if (countyChoice === "0") {
+  if (countyChoice === "5") {
     if (steps.length === 1) {
       await sendLegalAidSMS(phoneNumber, "All Counties", lang);
     }
@@ -147,7 +116,7 @@ async function handleProviderLookup(
       lang === "sw"
         ? "Tumekutumia SMS yenye orodha ya msaada wa kisheria na viungo."
         : "We sent an SMS with legal aid providers and links.";
-    return ussdResponse("CON", `${smsSentText}\n${exitHint}`, lang);
+    return ussdResponse("CON", smsSentText, lang);
   }
 
   const county = COUNTIES[countyChoice];
@@ -189,7 +158,7 @@ async function handleProviderLookup(
       ? "Orodha kamili na viungo vimetumwa kwa SMS."
       : "Full list and links sent via SMS.";
 
-  const body = [header, ...providerLines, footer, exitHint].join("\n").slice(0, 160);
+  const body = [header, ...providerLines, footer].join("\n").slice(0, 160);
 
   return ussdResponse("CON", body, lang);
 }

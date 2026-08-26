@@ -44,16 +44,16 @@ export const USSD_COPY = {
     en: "Thank you for using HakiTrack.",
   },
   casePrompt: {
-    sw: "Weka nambari ya kesi:\n(mf. CR2026089)\n0. Toka",
-    en: "Enter case number:\n(e.g. CR2026089)\n0. Exit",
+    sw: "Weka nambari ya kesi:\n(mf. CR2026089)",
+    en: "Enter case number:\n(e.g. CR2026089)",
   },
   caseNotFound: {
-    sw: "Kesi haijapatikana.\nThibitisha nambari.\n1. Jaribu tena  0. Toka",
-    en: "Case not found.\nVerify number.\n1. Try again  0. Exit",
+    sw: "Kesi haijapatikana.\nThibitisha nambari.\n1. Jaribu tena",
+    en: "Case not found.\nVerify number.\n1. Try again",
   },
   serviceUnavailable: {
-    sw: "Huduma haipatikani.\nJaribu tena baadaye.\n0. Toka",
-    en: "Service unavailable.\nTry again later.\n0. Exit",
+    sw: "Huduma haipatikani.\nJaribu tena baadaye.",
+    en: "Service unavailable.\nTry again later.",
   },
   subscribeSuccess: {
     sw: "Umesajiliwa! SMS ya uthibitisho imetumwa kwenye simu yako. Asante.",
@@ -68,8 +68,8 @@ export const USSD_COPY = {
     en: "Could not save subscription. Try again.",
   },
   smsReminderPrompt: {
-    sw: "1=SMS kumbukumbu\n(Kesi + mabadiliko ya hali)\n0=Toka",
-    en: "1=SMS alerts\n(hearing + status updates)\n0=Exit",
+    sw: "1=SMS kumbukumbu\n(Kesi + mabadiliko ya hali)",
+    en: "1=SMS alerts\n(hearing + status updates)",
   },
   caseLabels: {
     status: { sw: "Hali", en: "Status" },
