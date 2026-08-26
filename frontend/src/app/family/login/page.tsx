@@ -1,13 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { DemoAccountCard } from "@/components/auth/DemoAccountCard";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { DEMO_FAMILY } from "@/lib/demo-accounts";
 
 export default function FamilyLoginPage() {
   const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -40,6 +41,14 @@ export default function FamilyLoginPage() {
     }
   }
 
+  function handleUseDemo() {
+    setName(DEMO_FAMILY.name);
+    setEmail(DEMO_FAMILY.email);
+    setPhone(DEMO_FAMILY.phone);
+    // Submit after React flushes the state update
+    setTimeout(() => formRef.current?.requestSubmit(), 0);
+  }
+
   return (
     <SiteShell darkMain>
       <div className="flex min-h-[70vh] items-center justify-center px-4 py-16">
@@ -54,7 +63,7 @@ export default function FamilyLoginPage() {
             case number on your dashboard.
           </p>
 
-          <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+          <form ref={formRef} onSubmit={handleSubmit} className="mt-8 space-y-5">
             <div className="space-y-2">
               <label htmlFor="name" className="text-sm text-site-on-dark-muted">
                 Full Name
@@ -97,14 +106,18 @@ export default function FamilyLoginPage() {
               />
             </div>
 
-            {error ? <p className="text-sm text-red-400">{error}</p> : null}
+            {error ? (
+              <p role="alert" className="rounded border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-400">
+                {error}
+              </p>
+            ) : null}
 
             <button
               type="submit"
               disabled={loading}
               className="site-ghost-btn site-ghost-btn-light mt-4 w-full py-3 text-xs tracking-[0.14em] uppercase disabled:opacity-50"
             >
-              {loading ? "Signing in..." : "Continue to Dashboard"}
+              {loading ? "Signing in…" : "Continue to Dashboard"}
             </button>
           </form>
 
@@ -116,11 +129,7 @@ export default function FamilyLoginPage() {
               { label: "Phone", value: DEMO_FAMILY.phone },
               { label: "Case to track", value: DEMO_FAMILY.caseNumber },
             ]}
-            onUseDemo={() => {
-              setName(DEMO_FAMILY.name);
-              setEmail(DEMO_FAMILY.email);
-              setPhone(DEMO_FAMILY.phone);
-            }}
+            onUseDemo={handleUseDemo}
           />
         </div>
       </div>

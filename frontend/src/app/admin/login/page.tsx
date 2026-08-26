@@ -1,13 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ClerkDemoCard } from "@/components/auth/DemoAccountCard";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { DEMO_CLERK } from "@/lib/demo-accounts";
 
 export default function AdminLoginPage() {
   const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
   const [pin, setPin] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -37,6 +38,12 @@ export default function AdminLoginPage() {
     }
   }
 
+  function handleUseDemo() {
+    setPin(DEMO_CLERK.pin);
+    // Submit after React flushes the state update
+    setTimeout(() => formRef.current?.requestSubmit(), 0);
+  }
+
   return (
     <SiteShell darkMain>
       <div className="flex min-h-[70vh] items-center justify-center px-4 py-16">
@@ -47,7 +54,7 @@ export default function AdminLoginPage() {
             Enter PIN to manage case records
           </p>
 
-          <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+          <form ref={formRef} onSubmit={handleSubmit} className="mt-8 space-y-5">
             <div className="space-y-2">
               <label htmlFor="clerk-pin" className="text-sm text-site-on-dark-muted">
                 Clerk PIN
@@ -64,18 +71,22 @@ export default function AdminLoginPage() {
               />
             </div>
 
-            {error ? <p className="text-sm text-red-400">{error}</p> : null}
+            {error ? (
+              <p role="alert" className="rounded border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-400">
+                {error}
+              </p>
+            ) : null}
 
             <button
               type="submit"
               disabled={loading}
               className="site-ghost-btn site-ghost-btn-light mt-4 w-full py-3 text-xs tracking-[0.14em] uppercase disabled:opacity-50"
             >
-              {loading ? "Signing in..." : "Sign In"}
+              {loading ? "Signing in…" : "Sign In"}
             </button>
           </form>
 
-          <ClerkDemoCard onUseDemo={() => setPin(DEMO_CLERK.pin)} />
+          <ClerkDemoCard onUseDemo={handleUseDemo} />
         </div>
       </div>
     </SiteShell>
