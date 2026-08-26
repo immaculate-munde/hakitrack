@@ -12,6 +12,8 @@
   --accent-muted: #d1fae5;
   --site-header: #f5f5f5;
   --site-header-fg: #111827;
+  --site-header-scrolled: rgba(245, 245, 245, 0.92);
+  --site-header-height: 4.25rem;
   --site-dark: #ffffff;
   --site-dark-elevated: #f5f5f5;
   --site-on-dark: #111827;
@@ -35,8 +37,10 @@
   --accent: #059669;
   --accent-hover: #047857;
   --accent-muted: #064e3b;
-  --site-header: #f5f5f5;
-  --site-header-fg: #111827;
+  --site-header: #0d0d0d;
+  --site-header-fg: #ffffff;
+  --site-header-scrolled: rgba(13, 13, 13, 0.94);
+  --site-header-height: 4.25rem;
   --site-dark: #0d0d0d;
   --site-dark-elevated: #141414;
   --site-on-dark: #ffffff;
