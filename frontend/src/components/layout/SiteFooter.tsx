@@ -61,12 +61,15 @@ export function SiteFooter() {
           </form>
         </div>
 
-        <div className="mt-14 grid gap-4 text-xs tracking-[0.12em] text-site-on-dark-muted sm:grid-cols-2 lg:grid-cols-6">
+        <div className="mt-14 grid gap-4 text-xs tracking-[0.12em] text-site-on-dark-muted sm:grid-cols-2 lg:grid-cols-7">
           <Link href="/rights" className="underline underline-offset-4">
             Know Your Rights
           </Link>
           <Link href="/legal-aid" className="underline underline-offset-4">
             Legal Aid
+          </Link>
+          <Link href="/helplines" className="underline underline-offset-4">
+            Helplines
           </Link>
           <Link href="/sms-alerts" className="underline underline-offset-4">
             SMS Alerts

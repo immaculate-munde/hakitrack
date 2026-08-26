@@ -35,8 +35,8 @@ const STATUS_LABELS_I18N: Record<CaseStatus, Record<Lang, string>> = {
 
 export const USSD_COPY = {
   welcome: {
-    sw: "Karibu HakiTrack\n1. Angalia kesi\n2. Haki zako\n3. Msaada wa kisheria\n0. Toka",
-    en: "Welcome to HakiTrack\n1. Case status\n2. Know your rights\n3. Find legal aid\n0. Exit",
+    sw: "Karibu HakiTrack\n1. Angalia kesi\n2. Haki zako\n3. Msaada wa kisheria\n4. Simu za msaada\n0. Toka",
+    en: "Welcome to HakiTrack\n1. Case status\n2. Know your rights\n3. Find legal aid\n4. Helplines\n0. Exit",
   },
   goodbye: {
     sw: "Asante kwa kutumia HakiTrack.",

@@ -1,3 +1,4 @@
+import { HELPLINES } from "@/lib/helplines";
 import { RESOURCE_LINKS } from "@/lib/ussd/resource-links";
 
 export type GuideSection = {
@@ -26,11 +27,12 @@ export const RESOURCE_LINK_ITEMS = [
   },
 ] as const;
 
-export const TOLL_FREE_PROVIDERS = [
-  { name: "National Legal Aid Service (NLAS)", phone: "0800720640" },
-  { name: "Kituo Cha Sheria", phone: "0800720529" },
-  { name: "FIDA Kenya", phone: "0800720501" },
-] as const;
+export const TOLL_FREE_PROVIDERS = HELPLINES.filter((line) =>
+  ["nlas", "kituo", "fida"].includes(line.id),
+).map((line) => ({
+  name: line.name.en,
+  phone: line.phone,
+}));
 
 export const RIGHTS_SECTIONS: GuideSection[] = [
   {

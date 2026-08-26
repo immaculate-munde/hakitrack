@@ -2,7 +2,7 @@ import { NAV_HINT } from "@/lib/ussd/navigation";
 
 export type Lang = "sw" | "en";
 
-export type Branch = "case" | "rights" | "legalaid" | "root";
+export type Branch = "case" | "rights" | "legalaid" | "helplines" | "root";
 
 export const LANG_FOOTER: Record<Lang, string> = {
   sw: "(Kiingereza: *9)",
@@ -38,6 +38,8 @@ export function parseSession(text: string): {
       return { branch: "rights", steps, lang };
     case "3":
       return { branch: "legalaid", steps, lang };
+    case "4":
+      return { branch: "helplines", steps, lang };
     case "0":
       return { branch: "root", steps: ["0"], lang };
     default:

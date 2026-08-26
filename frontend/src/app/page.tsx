@@ -24,6 +24,11 @@ const SERVICES = [
     href: "/sms-alerts",
     copy: "Hearing reminders and status updates sent to any phone.",
   },
+  {
+    label: "Helplines",
+    href: "/helplines",
+    copy: "Toll-free legal aid, family support, and emergency numbers.",
+  },
 ];
 
 const ADVANTAGES = [
@@ -95,7 +100,7 @@ export default function HomePage() {
             Specialized guidance across critical legal journeys
           </h2>
 
-          <div className="mt-20 grid gap-8 sm:grid-cols-2 md:grid-cols-4">
+          <div className="mt-20 grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
             {SERVICES.map((service) => (
               <Link
                 key={service.label}
@@ -182,7 +187,7 @@ export default function HomePage() {
 
           <div className="site-panel mt-16 rounded-sm p-6 font-mono text-sm leading-7 text-site-on-dark-muted">
             <p>Karibu HakiTrack — {USSD_DIAL_CODE}</p>
-            <p>1. Angalia kesi  2. Haki zako  3. Msaada wa kisheria</p>
+            <p>1. Angalia kesi  2. Haki zako  3. Msaada wa kisheria  4. Simu za msaada</p>
             <p className="mt-2">8=Rudi  00=Menyu  (*9=English)</p>
             <p className="mt-2 text-site-mono">CR2026089 → Bail Set · KES 50,000</p>
           </div>

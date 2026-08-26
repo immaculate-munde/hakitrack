@@ -1,6 +1,7 @@
 // frontend/src/lib/ussd/session.ts
 import { handleCaseBranch } from "@/lib/ussd/case-branch";
 import { formatGoodbye, formatWelcome, ussdResponse } from "@/lib/ussd/formatters";
+import { handleHelplinesBranch } from "@/lib/ussd/helplines-content";
 import { handleLegalAidBranch } from "@/lib/ussd/legalaid-content";
 import { applyNavigation } from "@/lib/ussd/navigation";
 import { handleRightsBranch } from "@/lib/ussd/rights-content";
@@ -38,6 +39,8 @@ export async function handleUssdSession(input: UssdInput): Promise<Response> {
       return handleRightsBranch(steps, lang, input.phoneNumber);
     case "legalaid":
       return handleLegalAidBranch(steps, lang, input.phoneNumber);
+    case "helplines":
+      return handleHelplinesBranch(steps, lang, input.phoneNumber);
     case "root":
     default:
       if (steps[0] === "0") {
