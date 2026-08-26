@@ -1,22 +1,36 @@
 // frontend/src/lib/ussd/rights-content.ts
-import { ussdResponse, formatGoodbye } from "@/lib/ussd/formatters";
+import { sendSMS } from "@/lib/sms";
+import { ussdResponse } from "@/lib/ussd/formatters";
 import type { Lang } from "@/lib/ussd/language";
+import {
+  formatResourceLinksBlock,
+  RESOURCE_LINKS,
+} from "@/lib/ussd/resource-links";
+
+export { RESOURCE_LINKS as RIGHTS_LINKS };
+
+type RightsTopic = "arrested" | "courtCase" | "general";
+
 export const RIGHTS_MENU = {
   root: {
-    sw: "Jua Haki Zako:\n1. Ukikamatwa na polisi\n2. Kesi kortini\n3. Haki za jumla\n0. Rudi / Ondoka",
-    en: "Know Your Rights:\n1. If arrested by police\n2. In court\n3. General rights\n0. Back / Exit",
+    sw: "Jua Haki Zako:\n1. Ukikamatwa\n2. Kesi mahakamani\n3. Dhamana na haki\n4. Haki za jumla\n0. Toka",
+    en: "Know Your Rights:\n1. If arrested\n2. In court\n3. Bail & bond\n4. General rights\n0. Exit",
   },
   arrested: {
-    sw: "Ukikamatwa una haki ya:\n-Kujua sababu ya kukamatwa \n- Kunyamaza (Ibara 49(1)(b))\n- Kuwasiliana na wakili (Ibara 49(1)(c))\n- Mahakamani masaa 24 (Ibara 49(1)(f))\n- Dhamana nafuu (Ibara 49(1)(h))",
-    en: "If arrested you have the right to:\nKnow the reason for the arrest \n- Remain silent (Art 49(1)(b))\n- Communicate with lawyer (Art 49(1)(c))\n- Court within 24hrs (Art 49(1)(f))\n- Reasonable bail (Art 49(1)(h))",
+    sw: "Ukikamatwa (Ibara 49):\n- Sababu ya kukamatwa\n- Kunyamaza\n- Mawasiliano na familia/wakili\n- Mahakamani ndani ya masaa 24\n- Dhamana nafuu\nSMS yenye viungo imetumwa.",
+    en: "If arrested (Art 49):\n- Reason for arrest\n- Remain silent\n- Contact family/lawyer\n- Court within 24 hours\n- Reasonable bail\nLinks sent via SMS.",
   },
   courtCase: {
-    sw: "Ukiwa na kesi mahakamani:\n- Haki ya wakili (Ibara 50(2)(g))\n- Kesi bila kuchelewa (Ibara 50(2)(e))\n- Dhamana isiyo na ubaguzi (Ibara 49(1)(h))",
-    en: "If you have a court case:\n- Right to choose lawyer (Art 50(2)(g))\n- Trial without delay (Art 50(2)(e))\n- Right to reasonable bail (Art 49(1)(h))",
+    sw: "Kesi mahakamani (Ibara 50):\n- Chagua wakili wako\n- Kesi bila kuchelewa\n- Kujua mashtaka\n- Haki ya kukata rufaa\n- Usiwekwe chini ya duress\nSMS yenye viungo imetumwa.",
+    en: "In court (Art 50):\n- Choose your lawyer\n- Trial without delay\n- Know the charges\n- Right to appeal\n- No forced confession\nLinks sent via SMS.",
+  },
+  bail: {
+    sw: "Dhamana na bond:\n- Haki ya dhamana nafuu (Ibara 49)\n- Hakuna ubaguzi wa dhamana\n- Ombi la dhamana lweza kuwasilishwa\n- Fuata masharti ya mahakama\nSMS yenye viungo imetumwa.",
+    en: "Bail & bond:\n- Right to reasonable bail (Art 49)\n- No discriminatory bail\n- You may apply for bail\n- Follow court conditions\nLinks sent via SMS.",
   },
   general: {
-    sw: "Haki za Kikatiba (Sura ya 4):\n- Haki ya kuishi na utu (Ibara 26 & 28)\n- Usawa mbele ya sheria (Ibara 27)\n- Uhuru na usalama (Ibara 29)",
-    en: "Constitutional Rights (Ch. 4):\n- Right to life & dignity (Art 26 & 28)\n- Equality before law (Art 27)\n- Freedom & security (Art 29)",
+    sw: "Haki za Kikatiba:\n- Utu na heshima (Ibara 28)\n- Usawa mbele ya sheria (Ibara 27)\n- Usalama wa mtu (Ibara 29)\n- Haki ya kupata haki (Ibara 48)\nSMS yenye viungo imetumwa.",
+    en: "Constitutional rights:\n- Dignity (Art 28)\n- Equality before law (Art 27)\n- Personal security (Art 29)\n- Access to justice (Art 48)\nLinks sent via SMS.",
   },
 } as const;
 
@@ -31,7 +45,30 @@ export const SYSTEM_MESSAGES = {
   },
 };
 
-export function handleRightsBranch(steps: string[], lang: "sw" | "en"): Response {
+const SMS_BODY: Record<RightsTopic | "bail", Record<Lang, string>> = {
+  arrested: {
+    sw: `HakiTrack - Ukikamatwa:\n• Jua sababu ya kukamatwa\n• Kunyamaza - hujibu maswali ya uchunguzi pekee\n• Omba wakili na waambie familia\n• Lazima upelekwe mahakamani ndani ya masaa 24\n• Una haki ya dhamana nafuu\n\n${formatResourceLinksBlock("sw")}`,
+    en: `HakiTrack - If arrested:\n• Know why you are arrested\n• Remain silent - only answer identification\n• Ask for a lawyer; tell family\n• Must appear in court within 24 hours\n• Right to reasonable bail\n\n${formatResourceLinksBlock("en")}`,
+  },
+  courtCase: {
+    sw: `HakiTrack - Kesi mahakamani:\n• Una haki ya wakili wa kuchagua\n• Kesi ifanyike bila kuchelewa\n• Lazima ufahamishwe mashtaka\n• Usilazimishwe kukiri uhalifu\n• Una haki ya rufaa\n\n${formatResourceLinksBlock("sw")}`,
+    en: `HakiTrack - In court:\n• Right to a lawyer of your choice\n• Trial without unreasonable delay\n• Must be informed of charges\n• No forced confession\n• Right to appeal\n\n${formatResourceLinksBlock("en")}`,
+  },
+  bail: {
+    sw: `HakiTrack - Dhamana na bond:\n• Dhamana haiwezi kuwa ya kiwango kisichofikiika\n• Hakuna ubaguzi wa jinsia/dhehebu/kijamii\n• Unaweza kuomba kupunguzwa kwa dhamana\n• Fuata masharti ya mahakama\n• Wasiliana na wakili au msaada wa kisheria\n\nSoma zaidi:\nNCAJ Dhamana: ${RESOURCE_LINKS.ncajBail}\nKituo cha Sheria: ${RESOURCE_LINKS.kituo}\nKenya Law: ${RESOURCE_LINKS.kenyaLaw}`,
+    en: `HakiTrack - Bail & bond:\n• Bail must be reasonable, not excessive\n• No discrimination in setting bail\n• You may apply to reduce bail\n• Follow all court conditions\n• Contact a lawyer or legal aid\n\nLearn more:\nNCAJ Bail: ${RESOURCE_LINKS.ncajBail}\nKituo cha Sheria: ${RESOURCE_LINKS.kituo}\nKenya Law: ${RESOURCE_LINKS.kenyaLaw}`,
+  },
+  general: {
+    sw: `HakiTrack - Haki za jumla:\n• Haki ya utu (Ibara 28)\n• Usawa mbele ya sheria (Ibara 27)\n• Usalama wa mtu (Ibara 29)\n• Haki ya kupata haki (Ibara 48)\n• Haki ya kufurahia haki na uhuru wa kimsingi\n\n${formatResourceLinksBlock("sw")}`,
+    en: `HakiTrack - General rights:\n• Right to dignity (Art 28)\n• Equality before the law (Art 27)\n• Personal security (Art 29)\n• Access to justice (Art 48)\n• Bill of Rights applies to all\n\n${formatResourceLinksBlock("en")}`,
+  },
+};
+
+export async function handleRightsBranch(
+  steps: string[],
+  lang: Lang,
+  phoneNumber: string,
+): Promise<Response> {
   if (steps.length === 0) {
     return ussdResponse("CON", RIGHTS_MENU.root[lang], lang);
   }
@@ -45,13 +82,17 @@ export function handleRightsBranch(steps: string[], lang: "sw" | "en"): Response
   const keyMap: Record<string, keyof typeof RIGHTS_MENU> = {
     "1": "arrested",
     "2": "courtCase",
-    "3": "general",
+    "3": "bail",
+    "4": "general",
   };
 
   const key = keyMap[choice];
-  if (!key) {
+  if (!key || key === "root") {
     return ussdResponse("END", SYSTEM_MESSAGES.invalidChoice[lang], lang);
   }
+
+  const smsKey = key as RightsTopic | "bail";
+  await sendSMS(phoneNumber, SMS_BODY[smsKey][lang]);
 
   return ussdResponse("END", RIGHTS_MENU[key][lang], lang);
 }

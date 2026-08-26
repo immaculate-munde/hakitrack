@@ -50,7 +50,7 @@ export async function handleUssdSession(input: UssdInput): Promise<Response> {
     case "case":
       return handleCaseBranch(steps, lang, input.phoneNumber);
     case "rights":
-      return handleRightsBranch(steps, lang);
+      return handleRightsBranch(steps, lang, input.phoneNumber);
     case "legalaid":
       return handleLegalAidBranch(steps, lang, input.phoneNumber);
     case "root":
