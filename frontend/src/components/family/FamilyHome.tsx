@@ -1,5 +1,6 @@
 "use client";
 
+import { DEMO_FAMILY } from "@/lib/demo-accounts";
 import { Phone, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -70,7 +71,7 @@ export function FamilyHome({ memberName }: { memberName: string }) {
                 id="case-number"
                 value={caseNumber}
                 onChange={(event) => setCaseNumber(event.target.value)}
-                placeholder="CR-2026-089"
+                placeholder={DEMO_FAMILY.caseNumber}
                 required
                 className="w-full border-b border-site-border bg-transparent py-2 text-site-on-dark outline-none focus:border-site-mono"
               />
