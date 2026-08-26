@@ -140,6 +140,19 @@ curl -X POST http://localhost:3000/api/cron/reminders \
   -H "Authorization: Bearer YOUR_CRON_SECRET"
 ```
 
+## Demo accounts
+
+Run migrations **003** and **004**, then `npm run seed`. Use these credentials locally:
+
+| Role | URL | Credentials |
+|------|-----|-------------|
+| **Clerk** | [/admin/login](http://localhost:3000/admin/login) | PIN: `1234` |
+| **Family** | [/family/login](http://localhost:3000/family/login) | Name: `Jane Kamau`, Email: `family@demo.hakitrack.test`, Phone: `254711111111` |
+
+After family sign-in, look up case **`CR-2026-089`** on the dashboard (phone is pre-linked by the seed script).
+
+Both login pages include a **Use Demo Account** button that fills the form automatically.
+
 ## User roles
 
 | Role | Login | Dashboard | Access |
@@ -147,9 +160,7 @@ curl -X POST http://localhost:3000/api/cron/reminders \
 | **Clerk** | `/admin/login` (PIN) | `/admin` | Create and update cases, set family contact phone |
 | **Family** | `/family/login` (name, email, phone) | `/family` | Look up case by number, read-only view, SMS alerts |
 
-Family login registers name, email, and phone for SMS. On the dashboard, enter a case number — your phone must match the clerk's `family_contact_phone` or a USSD subscription.
-
-**Demo:** sign in with phone `254711111111`, then look up case `CR-2026-089` (after migrations 003–004 and seed).
+Family login registers name, email, and phone for SMS. On the dashboard, enter a case number — your phone must match the clerk's `family_contact_phone` or a USSD subscription. See **Demo accounts** above.
 
 ## Demo script
 
