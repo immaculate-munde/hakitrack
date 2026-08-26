@@ -61,14 +61,23 @@ export function SiteFooter() {
           </form>
         </div>
 
-        <div className="mt-14 grid gap-4 text-xs tracking-[0.12em] text-site-on-dark-muted md:grid-cols-3">
-          <Link href="/accessibility" className="underline underline-offset-4">
-            Accessibility Statement
+        <div className="mt-14 grid gap-4 text-xs tracking-[0.12em] text-site-on-dark-muted sm:grid-cols-2 lg:grid-cols-6">
+          <Link href="/rights" className="underline underline-offset-4">
+            Know Your Rights
           </Link>
-          <Link href="/privacy" className="text-center underline underline-offset-4">
+          <Link href="/legal-aid" className="underline underline-offset-4">
+            Legal Aid
+          </Link>
+          <Link href="/sms-alerts" className="underline underline-offset-4">
+            SMS Alerts
+          </Link>
+          <Link href="/accessibility" className="underline underline-offset-4">
+            Accessibility
+          </Link>
+          <Link href="/privacy" className="underline underline-offset-4">
             Privacy Policy
           </Link>
-          <p className="md:text-right">
+          <p className="lg:text-right">
             © 2026 HakiTrack. Justice access for every family.
           </p>
         </div>

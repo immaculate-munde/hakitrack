@@ -7,6 +7,7 @@ import {
 } from "@/lib/case-status";
 import type { Lang } from "@/lib/ussd/language";
 import { withLangFooter } from "@/lib/ussd/language";
+import { formatResourceLinksBlock } from "@/lib/ussd/resource-links";
 
 export function ussdResponse(
   type: "CON" | "END",
@@ -63,8 +64,8 @@ export const USSD_COPY = {
     en: "Could not save subscription. Try again.",
   },
   smsReminderPrompt: {
-    sw: "1=SMS kumbukumbu  0=Toka",
-    en: "1=SMS reminder  0=Exit",
+    sw: "1=SMS kumbukumbu\n(Kesi + mabadiliko ya hali)\n0=Toka",
+    en: "1=SMS alerts\n(hearing + status updates)\n0=Exit",
   },
   caseLabels: {
     status: { sw: "Hali", en: "Status" },
@@ -125,10 +126,10 @@ export function formatSubscribeConfirmSms(
   const status = STATUS_LABELS_I18N[caseRecord.current_status][lang];
 
   if (lang === "sw") {
-    return `HakiTrack: Umesajiliwa kwa kesi ${caseRecord.case_number}. Hali: ${status}. Kesi: ${hearing}, ${court}. Utapata kumbukumbu siku kabla ya kesi.`;
+    return `HakiTrack - SMS Alerts:\nUmesajiliwa kwa kesi ${caseRecord.case_number}.\nHali: ${status}\nKesi: ${hearing}, ${court}\n\nUtapata:\n• Kumbukumbu siku kabla ya kesi\n• Taarifa wakati hali inabadilika\n\n${formatResourceLinksBlock("sw")}`;
   }
 
-  return `HakiTrack: Subscribed to case ${caseRecord.case_number}. Status: ${status}. Hearing: ${hearing}, ${court}. Reminder SMS sent before hearing day.`;
+  return `HakiTrack - SMS Alerts:\nSubscribed to case ${caseRecord.case_number}.\nStatus: ${status}\nHearing: ${hearing}, ${court}\n\nYou will receive:\n• Reminder 1 day before hearing\n• Alerts when status changes\n\n${formatResourceLinksBlock("en")}`;
 }
 
 function shortenCourt(name: string): string {

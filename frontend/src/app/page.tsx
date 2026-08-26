@@ -1,12 +1,29 @@
 import Image from "next/image";
 import Link from "next/link";
 import { SiteShell } from "@/components/layout/SiteShell";
+import { USSD_DIAL_CODE } from "@/lib/ussd/config";
 
 const SERVICES = [
-  { label: "Case Status", href: "/family/login" },
-  { label: "Know Your Rights", href: "/#services" },
-  { label: "Legal Aid", href: "/#services" },
-  { label: "SMS Alerts", href: "/#services" },
+  {
+    label: "Case Status",
+    href: "/family/login",
+    copy: "Look up bail, remand status, and hearing dates online or via USSD.",
+  },
+  {
+    label: "Know Your Rights",
+    href: "/rights",
+    copy: "Constitutional rights if arrested, in court, or applying for bail.",
+  },
+  {
+    label: "Legal Aid",
+    href: "/legal-aid",
+    copy: "Free legal help, toll-free helplines, and providers by county.",
+  },
+  {
+    label: "SMS Alerts",
+    href: "/sms-alerts",
+    copy: "Hearing reminders and status updates sent to any phone.",
+  },
 ];
 
 const ADVANTAGES = [
@@ -78,14 +95,20 @@ export default function HomePage() {
             Specialized guidance across critical legal journeys
           </h2>
 
-          <div className="mt-20 grid grid-cols-2 gap-8 md:grid-cols-4">
+          <div className="mt-20 grid gap-8 sm:grid-cols-2 md:grid-cols-4">
             {SERVICES.map((service) => (
               <Link
                 key={service.label}
                 href={service.href}
-                className="site-mono-label text-sm uppercase transition-opacity hover:opacity-70 md:text-base"
+                className="group border-t border-site-border pt-6 transition-opacity hover:opacity-80"
               >
-                {service.label}
+                <p className="site-mono-label text-sm uppercase">{service.label}</p>
+                <p className="mt-4 text-sm leading-7 text-site-on-dark-muted">
+                  {service.copy}
+                </p>
+                <span className="mt-4 inline-block text-xs tracking-[0.14em] uppercase text-site-mono">
+                  Learn more →
+                </span>
               </Link>
             ))}
           </div>
@@ -158,9 +181,9 @@ export default function HomePage() {
           </div>
 
           <div className="site-panel mt-16 rounded-sm p-6 font-mono text-sm leading-7 text-site-on-dark-muted">
-            <p>Karibu HakiTrack</p>
+            <p>Karibu HakiTrack — {USSD_DIAL_CODE}</p>
             <p>1. Angalia kesi  2. Haki zako  3. Msaada wa kisheria</p>
-            <p className="mt-2 text-site-mono">CR2026089 → Bail Set · KES 50,000</p>
+            <p className="mt-2 text-site-mono">CR2026089 → Bail Set · KES 50,000 · SMS reminder available</p>
           </div>
         </div>
       </section>
