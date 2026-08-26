@@ -26,10 +26,8 @@ export async function sendSMS(phoneNumber: string, message: string) {
     }
 
     const response = await sms.send(payload);
-    const recipients = response?.SMSMessageData?.Recipients ?? [];
-    const failed = recipients.filter(
-      (r: { status?: string }) => r.status !== "Success",
-    );
+    const recipients = response.SMSMessageData?.Recipients ?? [];
+    const failed = recipients.filter((r) => r.status !== "Success");
 
     if (failed.length > 0) {
       console.error("[HakiTrack SMS] Delivery issue:", failed);
