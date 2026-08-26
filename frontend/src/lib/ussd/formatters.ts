@@ -47,6 +47,18 @@ export const USSD_COPY = {
     sw: "Weka nambari ya kesi:\n(mf. CR2026089)",
     en: "Enter case number:\n(e.g. CR2026089)",
   },
+  kycNamePrompt: {
+    sw: "KYC: Weka jina lako kamili\n(mf. Jane Kamau)",
+    en: "KYC: Enter your full name\n(e.g. Jane Kamau)",
+  },
+  kycDefendantPrompt: {
+    sw: "Thibitisha uhusiano:\nWeka jina la kwanza la mshtakiwa",
+    en: "Verify your link:\nEnter defendant's first name",
+  },
+  kycFailed: {
+    sw: "Uthibitisho umeshindikana.\nBonyeza 0 kurudi ujaribu tena.",
+    en: "Verification failed.\nPress 0 to go back and try again.",
+  },
   caseNotFound: {
     sw: "Kesi haijapatikana.\nThibitisha nambari.\n1. Jaribu tena",
     en: "Case not found.\nVerify number.\n1. Try again",

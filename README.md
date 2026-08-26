@@ -94,7 +94,7 @@ Karibu HakiTrack
 (Kiingereza: *9)
 ```
 
-- **Branch 1:** case lookup + SMS subscribe
+- **Branch 1:** case lookup + KYC (name + defendant verify) + SMS subscribe
 - **Branch 2:** constitutional rights + SMS links
 - **Branch 3:** legal aid by county + SMS fallback
 - **Branch 4:** toll-free helplines + SMS list
@@ -107,10 +107,10 @@ curl -X POST http://localhost:3000/api/ussd \
   -H "Content-Type: application/json" \
   -d '{"sessionId":"1","serviceCode":"*789*977888#","phoneNumber":"+254711111111","text":""}'
 
-# Case lookup (branch 1)
+# Case lookup with KYC (branch 1) — demo case CR2026089, defendant first name "John"
 curl -X POST http://localhost:3000/api/ussd \
   -H "Content-Type: application/json" \
-  -d '{"sessionId":"1","serviceCode":"*789*977888#","phoneNumber":"+254711111111","text":"1*CR2026089"}'
+  -d '{"sessionId":"1","serviceCode":"*789*977888#","phoneNumber":"+254711111111","text":"1*CR2026089*Jane Kamau*John"}'
 
 # Rights menu (branch 2)
 curl -X POST http://localhost:3000/api/ussd \

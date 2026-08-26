@@ -1,6 +1,10 @@
 export const dynamic = "force-dynamic";
 
 import { AuditTimeline } from "@/components/admin/AuditTimeline";
+import {
+  UssdAccessLog,
+  type UssdAccessRecord,
+} from "@/components/admin/UssdAccessLog";
 import { CaseHeroCard } from "@/components/admin/CaseHeroCard";
 import { CaseStatsBar } from "@/components/admin/CaseStatsBar";
 import { CaseUpdatePanel } from "@/components/admin/CaseUpdatePanel";
@@ -33,7 +37,11 @@ export default async function CaseDetailPage({
     notFound();
   }
 
-  const [{ count: subscriberCount }, { data: auditLogs }] = await Promise.all([
+  const [
+    { count: subscriberCount },
+    { data: auditLogs },
+    { data: ussdAccess },
+  ] = await Promise.all([
     supabase
       .from("case_subscribers")
       .select("*", { count: "exact", head: true })
@@ -43,6 +51,12 @@ export default async function CaseDetailPage({
       .select("*")
       .eq("case_id", id)
       .order("changed_at", { ascending: false }),
+    supabase
+      .from("ussd_case_access")
+      .select("id, phone_number, caller_name, verification_method, accessed_at")
+      .eq("case_id", id)
+      .order("accessed_at", { ascending: false })
+      .limit(20),
   ]);
 
   return (
@@ -66,6 +80,7 @@ export default async function CaseDetailPage({
           auditCount={auditLogs?.length ?? 0}
         />
         <AuditTimeline logs={(auditLogs ?? []) as AuditLogRecord[]} />
+        <UssdAccessLog records={(ussdAccess ?? []) as UssdAccessRecord[]} />
       </div>
     </AdminShell>
   );
